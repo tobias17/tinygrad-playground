@@ -1,2 +1,3 @@
 *.pyc
 .mypy/
+media/
