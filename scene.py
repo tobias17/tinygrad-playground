@@ -1,6 +1,6 @@
 from manim import Scene, Square, VGroup, ManimColor, Animation, LEFT # type: ignore
 import functools, operator
-from typing import List, Tuple, Iterable, Union, TypeVar
+from typing import List, Tuple, Iterable, Union, TypeVar, Callable
 
 DEFAULT_VIEW_HEIGHT = 3.0
 DEFAULT_VIEW_WIDTH  = 6.0
@@ -49,10 +49,23 @@ class CreateGrid(Scene):
         tv_3.grid.move_to([0, -2.0, 0]).scale(5)
         self.add(tv_3.grid)
 
-        self.play(tv_1.indicator_opacity_anim(1.0), tv_2.indicator_opacity_anim(1.0), tv_3.indicator_opacity_anim(1.0), run_time=0.5)
-        self.play(tv_3.grid[0][0].animate.set_fill(opacity=1.0), run_time=0.1)
-        for i in range(1, 10*5):
-            self.play(*[tv.indicator_move_anim(i) for tv in [tv_1, tv_2, tv_3]], run_time=0.1)
-            self.play(tv_3.grid[0][i].animate.set_fill(opacity=1.0), run_time=0.1)
-        self.play(tv_1.indicator_opacity_anim(0.0), tv_2.indicator_opacity_anim(0.0), tv_3.indicator_opacity_anim(0.0), run_time=0.5)
+
+        def apply_all(func:Callable[[TensorView],T]) -> List[T]:
+            return [func(tv_1), func(tv_2), func(tv_3)]
+
+        ANIM_DELTA = 0.1
+        w, h = 10, 5
+
+        self.play(*apply_all(lambda tv: tv.indicator_opacity_anim(1.0)), run_time=0.5)
+        for y in range(h):
+            for x in range(w):
+                i = x + y*w
+                tv_3.grid[0][i].set_fill(opacity=-x)
+            self.play(*[tv_3.grid[0][y*w+i].animate.set_fill(opacity=w-i) for i in range(w)], *apply_all(lambda tv: tv.indicator_move_anim((y+1)*w-1)), run_time=ANIM_DELTA*w)
+            if y+1 < w:
+                self.play(*apply_all(lambda tv: tv.indicator_move_anim((y+1)*w)), run_time=ANIM_DELTA*2.0)
+                self.wait(ANIM_DELTA)
+        self.play(*apply_all(lambda tv: tv.indicator_opacity_anim(0.0)), run_time=0.5)
         self.wait()
+
+
