@@ -1,4 +1,4 @@
-from manim import Scene, Square, Prism, VGroup, ManimColor, Animation, LEFT # type: ignore
+from manim import Scene, Square, VGroup, ManimColor, Animation, LEFT # type: ignore
 import sys, os
 from typing import List, Tuple, Iterable, Union, TypeVar, Callable
 
@@ -23,7 +23,7 @@ class TensorView:
         assert len(shape) > 0 and len(shape) < 3, f"Can only view 1D and 2D shapes, found {len(shape)}D shape"
         if len(shape) == 1: shape = (shape[0],1)
         w, h = self.shape[0], (self.shape[1] if len(self.shape) > 1 else 1)
-        self.grid = VGroup(VGroup(*[Prism(fill_color=lerp_color(i, prod(shape)), fill_opacity=opacity) for i in range(prod(shape))], Prism(stroke_opacity=0.0).scale(0.7)))
+        self.grid = VGroup(VGroup(*[Square(fill_color=lerp_color(i, prod(shape)), fill_opacity=opacity) for i in range(prod(shape))], Square(stroke_opacity=0.0).scale(0.7)))
         for x in range(w):
             for y in range(h):
                 self.grid[0][x+y*w].move_to([x, y, 0]).scale(0.5)
@@ -64,7 +64,7 @@ def elementwise(scene:Scene, a:TensorView, b:TensorView):
 class CreateGrid(Scene):
     def construct(self):
 
-        tv_1 = TensorView(1, 5)
+        tv_1 = TensorView(10, 5)
         tv_1.grid.move_to([-3.5, 2.0, 0]).scale(5)
         self.add(tv_1.grid)
 
