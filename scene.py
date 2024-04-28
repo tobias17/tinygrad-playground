@@ -1,6 +1,10 @@
-from manim import Scene, Square, VGroup, ManimColor, Animation, LEFT # type: ignore
-import functools, operator
+from manim import Scene, Square, Prism, VGroup, ManimColor, Animation, LEFT # type: ignore
+import sys, os
 from typing import List, Tuple, Iterable, Union, TypeVar, Callable
+
+sys.path.append(os.path.join(os.path.dirname(__file__), "..", "tinygrad"))
+from tinygrad import Tensor
+from tinygrad.helpers import prod
 
 ANIM_DELTA = 0.1
 
@@ -9,7 +13,6 @@ ORANGE = (0xff, 0x7f, 0x0e)
 GREEN  = (0x2c, 0xa0, 0x2c)
 
 T = TypeVar("T")
-def prod(x:Iterable[T]) -> Union[T,int]: return functools.reduce(operator.mul, x, 1)
 
 class TensorView:
     def __init__(self, *shape, color:Tuple[int,int,int]=BLUE, min_c:float=0.1, max_c:float=0.9, opacity:float=1.0):
@@ -20,7 +23,7 @@ class TensorView:
         assert len(shape) > 0 and len(shape) < 3, f"Can only view 1D and 2D shapes, found {len(shape)}D shape"
         if len(shape) == 1: shape = (shape[0],1)
         w, h = self.shape[0], (self.shape[1] if len(self.shape) > 1 else 1)
-        self.grid = VGroup(VGroup(*[Square(fill_color=lerp_color(i, prod(shape)), fill_opacity=opacity) for i in range(prod(shape))], Square(stroke_opacity=0.0).scale(0.7)))
+        self.grid = VGroup(VGroup(*[Prism(fill_color=lerp_color(i, prod(shape)), fill_opacity=opacity) for i in range(prod(shape))], Prism(stroke_opacity=0.0).scale(0.7)))
         for x in range(w):
             for y in range(h):
                 self.grid[0][x+y*w].move_to([x, y, 0]).scale(0.5)
@@ -50,8 +53,7 @@ def elementwise(scene:Scene, a:TensorView, b:TensorView):
     scene.play(*apply_all(lambda tv: tv.indicator_opacity_anim(1.0)), run_time=0.5)
     for y in range(h):
         for x in range(w):
-            i = x + y*w
-            c.grid[0][i].set_fill(opacity=-x)
+            c.grid[0][x+y*w].set_fill(opacity=-x)
         scene.play(*[c.grid[0][y*w+i].animate.set_fill(opacity=w-i) for i in range(w)], *apply_all(lambda tv: tv.indicator_move_anim(w-1, y)), run_time=ANIM_DELTA*w)
         if y+1 < h:
             scene.play(*apply_all(lambda tv: tv.indicator_move_anim(0, y+1)), run_time=ANIM_DELTA*2.0)
@@ -71,4 +73,3 @@ class CreateGrid(Scene):
         self.add(tv_2.grid)
 
         elementwise(self, tv_1, tv_2)
-
