@@ -1,6 +1,6 @@
-from manim import Scene, Square, VGroup, ManimColor, Animation, LEFT # type: ignore
+from manim import Scene, Square, Dot, VGroup, ManimColor, Animation, LEFT # type: ignore
 import sys, os
-from typing import List, Tuple, Iterable, Union, TypeVar, Callable
+from typing import List, Tuple, Iterable, Union, TypeVar, Callable, Dict
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "..", "tinygrad"))
 from tinygrad import Tensor
@@ -73,3 +73,30 @@ class CreateGrid(Scene):
         self.add(tv_2.grid)
 
         elementwise(self, tv_1, tv_2)
+
+
+
+
+
+
+class Grid:
+    def __init__(self, w:int, h:int):
+        self.w, self.h = w, h
+        self.dots: Dict[int,Dict[int,Dot]] = {}
+        all_dots = []
+        for y in range(h):
+            self.dots[y] = {}
+            for x in range(w):
+                self.dots[y][x] = (d := Dot(fill_opacity=0).move_to([x,-y,0]))
+                all_dots.append(d)
+        self.grid = VGroup(*all_dots)
+
+    def __getitem__(self, index) -> Dot:
+        assert isinstance(index, tuple)
+        assert len(index) == 2
+        x, y = index
+        return self.dots[y][x]
+
+class MoveableGrid(Scene):
+    def construct(self):
+        pass
