@@ -47,6 +47,12 @@
          background-color: #fff;
          margin: 0 5px;
       }
+      .svg-box {
+         width: 100%;
+         height: auto;
+         aspect-ratio: 3 / 1;
+         margin-top: 8px;
+      }
       button {
          margin: 0 5px;
       }
@@ -91,13 +97,96 @@
       </div>
    </div>
 
+   <div class="flexbox">
+      <svg id="svg" class="svg-box" viewBox="0 0 300 100" xmlns="http://www.w3.org/2000/svg">
+         <circle cx="50" cy="50" r="800" fill="black" />
+         <circle cx="50" cy="50" r="40" fill="red" />
+      </svg>
+   </div>
+
    <script>
       function changeValue(id, delta) {
          const label = document.getElementById(id);
          let currentValue = parseInt(label.textContent);
          let newValue = Math.max(1, Math.min(10, currentValue + delta));
          label.textContent = newValue;
+         update();
       }
+
+      function createLine(x1, x2, y1, y2, color, width) {
+         const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+         line.setAttribute('x1', x1);
+         line.setAttribute('x2', x2);
+         line.setAttribute('y1', y1);
+         line.setAttribute('y2', y2);
+         line.setAttribute('stroke', 'black')
+         line.setAttribute('stroke-width', width)
+         return line
+      }
+
+      function update() {
+         // grab width and height
+         const a_width  = parseInt(document.getElementById("shapeAWidth" ).textContent);
+         const a_height = parseInt(document.getElementById("shapeAHeight").textContent);
+         const b_width  = parseInt(document.getElementById("shapeBWidth" ).textContent);
+         const b_height = parseInt(document.getElementById("shapeBHeight").textContent);
+
+         const widths  = [a_width,  b_width ];
+         const heights = [a_height, b_height];
+
+         // clear svg
+         const svg = document.getElementById("svg");
+         while (true) {
+            const child = svg.lastElementChild
+            if (!child) {
+               break;
+            }
+            svg.removeChild(child)
+         }
+         const bg = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+         bg.setAttribute('r', 1000);
+         bg.setAttribute('fill', '#eeeeee');
+         svg.appendChild(bg);
+
+         const FULL_SECTION_SIZE = 100;
+         const SECTION_BUFFER = 5;
+         const WRITE_SECTION_SIZE = FULL_SECTION_SIZE - (SECTION_BUFFER * 2);
+
+         const max_shape_size = Math.max(a_width, a_height, b_width, b_height);
+         const box_size       = WRITE_SECTION_SIZE / (max_shape_size + 1);
+         const stroke_width   = WRITE_SECTION_SIZE / max_shape_size * 0.03;
+
+         for (let shape_i = 0; shape_i < 2; shape_i++) {
+            const center_x = FULL_SECTION_SIZE * (shape_i + 0.5);
+            const center_y = FULL_SECTION_SIZE * 0.5;
+
+            const box_scale_x = (widths [shape_i]) * box_size;
+            const box_scale_y = (heights[shape_i]) * box_size;
+
+            const upper_x = center_x + -0.5 * box_scale_x - stroke_width/2;
+            const lower_x = center_x +  0.5 * box_scale_x + stroke_width/2;
+            const upper_y = center_y + -0.5 * box_scale_y - stroke_width/2;
+            const lower_y = center_y +  0.5 * box_scale_y + stroke_width/2;
+
+            for (let x = 0; x < widths[shape_i] + 1; x++) {
+               const xx = center_x + ((x / widths[shape_i]) - 0.5) * box_scale_x;
+               svg.appendChild(createLine(xx, xx, upper_y, lower_y, 'black', stroke_width));
+            }
+
+            for (let y = 0; y < heights[shape_i] + 1; y++) {
+               const yy = center_y + ((y / heights[shape_i]) - 0.5) * box_scale_y;
+               svg.appendChild(createLine(upper_x, lower_x, yy, yy, 'black', stroke_width));
+            }
+
+            const a = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+            a.setAttribute('r', 2)
+            a.setAttribute('fill', 'red')
+            a.setAttribute('cx', center_x)
+            a.setAttribute('cy', center_y)
+            svg.appendChild(a)
+         }
+      }
+      update()
    </script>
 </body>
 </html>
