@@ -3,7 +3,7 @@
 <head>
    <meta charset="UTF-8">
    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-   <title>Shape Dimensions</title>
+   <title>Add Op</title>
    <style>
       body {
          font-family: Arial, sans-serif;
@@ -52,6 +52,15 @@
          height: auto;
          aspect-ratio: 3 / 1;
          margin-top: 10px;
+      }
+      .box-a {
+         fill: #2398FF;
+      }
+      .box-b {
+         fill: #FF9B34;
+      }
+      .box-c {
+         fill: #378A5A;
       }
       button {
          margin: 0 5px;
@@ -133,9 +142,9 @@
       const FULL_SECTION_SIZE = 100
       const SECTION_BUFFER = 5
       const WRITE_SECTION_SIZE = FULL_SECTION_SIZE - (SECTION_BUFFER * 2)
-      const COLOR_A = "#2398FF"
-      const COLOR_B = "#FF9B34"
-      const COLOR_C = "#378A5A"
+
+      const INACTIVE_STYLE = "opacity:0.3;"
+      const ACTIVE_STYLE   = "opacity:1.0;"
 
       function change_value(id, delta) {
          const label = document.getElementById(id)
@@ -154,6 +163,7 @@
          line.setAttribute('stroke', 'black')
          line.setAttribute('stroke-width', width)
          svg.appendChild(line)
+         return line
       }
 
       function create_circle(svg, cx, cy, r, color) {
@@ -163,25 +173,52 @@
          circle.setAttribute('r', r)
          circle.setAttribute('fill', color)
          svg.appendChild(circle)
+         return circle
       }
 
-      function create_grid(svg, cx, cy, box_size, width, height, stroke_width) {
+      function create_rect(svg, x, y, w, h, class_, style) {
+         const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect')
+         rect.setAttribute('x', x)
+         rect.setAttribute('y', y)
+         rect.setAttribute('width', w)
+         rect.setAttribute('height', h)
+         rect.setAttribute('class', class_)
+         rect.setAttribute('style', style)
+         svg.appendChild(rect)
+         return rect
+      }
+
+      function create_grid(svg, cx, cy, box_size, width, height, stroke_width, box_class) {
          const box_scale_x = width  * box_size
          const box_scale_y = height * box_size
+         const upper_y = cy + -0.5 * box_scale_y
+         const lower_y = cy +  0.5 * box_scale_y
+         const upper_x = cx + -0.5 * box_scale_x
+         const lower_x = cx +  0.5 * box_scale_x
 
-         const upper_y = cy + -0.5 * box_scale_y - stroke_width/2
-         const lower_y = cy +  0.5 * box_scale_y + stroke_width/2
+         var rects = []
+         for (let y = 0; y < height; y++) {
+            var row = []
+            for (let x = 0; x < width; x++) {
+               const xx = upper_x + box_size * x
+               const yy = upper_y + box_size * y
+               const rect = create_rect(svg, xx, yy, box_size, box_size, box_class, INACTIVE_STYLE)
+               row.push(rect)
+            }
+            rects.push(row)
+         }
+
          for (let x = 0; x < width + 1; x++) {
             const xx = cx + ((x / width) - 0.5) * box_scale_x
-            create_line(svg, xx, xx, upper_y, lower_y, 'black', stroke_width)
+            create_line(svg, xx, xx, upper_y - stroke_width/2, lower_y + stroke_width/2, 'black', stroke_width)
          }
 
-         const upper_x = cx + -0.5 * box_scale_x - stroke_width/2
-         const lower_x = cx +  0.5 * box_scale_x + stroke_width/2
          for (let y = 0; y < height + 1; y++) {
             const yy = cy + ((y / height) - 0.5) * box_scale_y
-            create_line(svg, upper_x, lower_x, yy, yy, 'black', stroke_width)
+            create_line(svg, upper_x - stroke_width/2, lower_x + stroke_width/2, yy, yy, 'black', stroke_width)
          }
+
+         return rects
       }
 
       function update() {
@@ -214,12 +251,13 @@
          const max_shape_size = Math.max(widths[0], widths[1], heights[0], heights[1])
          const box_size       = WRITE_SECTION_SIZE / (max_shape_size + 1)
          const stroke_width   = WRITE_SECTION_SIZE / max_shape_size * 0.03
-         for (let shape_i = 0; shape_i < 2; shape_i++) {
-            const cx = FULL_SECTION_SIZE * (shape_i + 0.5)
-            const cy = FULL_SECTION_SIZE * 0.5
-            create_grid(svg, cx, cy, box_size, widths[shape_i], heights[shape_i], stroke_width)
-            create_circle(svg, cx, cy, 2, 'red')
-         }
+
+         const cy = FULL_SECTION_SIZE * 0.5
+         const cx1 = FULL_SECTION_SIZE * 0.5
+         const cx2 = FULL_SECTION_SIZE * 1.5
+         
+         const rects_a = create_grid(svg, cx1, cy, box_size, widths[0], heights[0], stroke_width, "box-a")
+         const rects_b = create_grid(svg, cx2, cy, box_size, widths[1], heights[1], stroke_width, "box-b")
 
          c_width_label.textContent  = "-"
          c_height_label.textContent = "-"
@@ -236,13 +274,26 @@
             const height = Math.max(heights[0], heights[1])
             c_width_label.textContent  = width
             c_height_label.textContent = height
-            create_grid(svg, cx, cy, box_size, width, height, stroke_width)
+            rects_c = create_grid(svg, cx, cy, box_size, width, height, stroke_width, "box-c")
 
+            for (let y = 0; y < height; y++) {
+               for (let x = 0; x < width; x++) {
+                  rects_c[y][x].onmouseover = function(){
+                     rects_a[heights[0]==1 ? 0 : y][widths[0]==1 ? 0 : x].setAttribute("style", ACTIVE_STYLE)
+                     rects_b[heights[1]==1 ? 0 : y][widths[1]==1 ? 0 : x].setAttribute("style", ACTIVE_STYLE)
+                     rects_c[y][x].setAttribute("style", ACTIVE_STYLE)
+                  }
+                  rects_c[y][x].onmouseout = function(){
+                     rects_a[heights[0]==1 ? 0 : y][widths[0]==1 ? 0 : x].setAttribute("style", INACTIVE_STYLE)
+                     rects_b[heights[1]==1 ? 0 : y][widths[1]==1 ? 0 : x].setAttribute("style", INACTIVE_STYLE)
+                     rects_c[y][x].setAttribute("style", INACTIVE_STYLE)
+                  }
+               }
+            }
          }
       }
 
       update()
-
    </script>
 </body>
 </html>
