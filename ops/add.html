@@ -51,7 +51,7 @@
          width: 100%;
          height: auto;
          aspect-ratio: 3 / 1;
-         margin-top: 8px;
+         margin-top: 10px;
       }
       button {
          margin: 0 5px;
@@ -59,6 +59,10 @@
       h2 {
          margin: 0 0 10px 0;
          text-align: center;
+      }
+      svg {
+         border: 1px solid #ccc;
+         border-radius: 5px;
       }
    </style>
 </head>
@@ -105,84 +109,97 @@
    </div>
 
    <script>
+      const COLOR_A = "#FF9B34"
+      const COLOR_B = "#2398FF"
+      const COLOR_C = "#297148"
+
       function changeValue(id, delta) {
-         const label = document.getElementById(id);
-         let currentValue = parseInt(label.textContent);
-         let newValue = Math.max(1, Math.min(10, currentValue + delta));
-         label.textContent = newValue;
-         update();
+         const label = document.getElementById(id)
+         let currentValue = parseInt(label.textContent)
+         let newValue = Math.max(1, Math.min(10, currentValue + delta))
+         label.textContent = newValue
+         update()
       }
 
-      function createLine(x1, x2, y1, y2, color, width) {
-         const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-         line.setAttribute('x1', x1);
-         line.setAttribute('x2', x2);
-         line.setAttribute('y1', y1);
-         line.setAttribute('y2', y2);
+      function createLine(svg, x1, x2, y1, y2, color, width) {
+         const line = document.createElementNS('http://www.w3.org/2000/svg', 'line')
+         line.setAttribute('x1', x1)
+         line.setAttribute('x2', x2)
+         line.setAttribute('y1', y1)
+         line.setAttribute('y2', y2)
          line.setAttribute('stroke', 'black')
          line.setAttribute('stroke-width', width)
-         return line
+         svg.appendChild(line)
+      }
+
+      function createCircle() {
+
+      }
+
+      function createGrid(svg, cx, cy, box_size, width, height, stroke_width) {
+         const box_scale_x = width  * box_size
+         const box_scale_y = height * box_size
+
+         const upper_x = cx + -0.5 * box_scale_x - stroke_width/2
+         const lower_x = cx +  0.5 * box_scale_x + stroke_width/2
+         const upper_y = cy + -0.5 * box_scale_y - stroke_width/2
+         const lower_y = cy +  0.5 * box_scale_y + stroke_width/2
+
+         for (let x = 0; x < width + 1; x++) {
+            const xx = cx + ((x / width) - 0.5) * box_scale_x
+            createLine(svg, xx, xx, upper_y, lower_y, 'black', stroke_width)
+         }
+
+         for (let y = 0; y < height + 1; y++) {
+            const yy = cy + ((y / height) - 0.5) * box_scale_y
+            createLine(svg, upper_x, lower_x, yy, yy, 'black', stroke_width)
+         }
       }
 
       function update() {
          // grab width and height
-         const a_width  = parseInt(document.getElementById("shapeAWidth" ).textContent);
-         const a_height = parseInt(document.getElementById("shapeAHeight").textContent);
-         const b_width  = parseInt(document.getElementById("shapeBWidth" ).textContent);
-         const b_height = parseInt(document.getElementById("shapeBHeight").textContent);
+         const a_width  = parseInt(document.getElementById("shapeAWidth" ).textContent)
+         const a_height = parseInt(document.getElementById("shapeAHeight").textContent)
+         const b_width  = parseInt(document.getElementById("shapeBWidth" ).textContent)
+         const b_height = parseInt(document.getElementById("shapeBHeight").textContent)
 
-         const widths  = [a_width,  b_width ];
-         const heights = [a_height, b_height];
+         const widths  = [a_width,  b_width ]
+         const heights = [a_height, b_height]
 
          // clear svg
-         const svg = document.getElementById("svg");
+         const svg = document.getElementById("svg")
          while (true) {
             const child = svg.lastElementChild
             if (!child) {
-               break;
+               break
             }
             svg.removeChild(child)
          }
-         const bg = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-         bg.setAttribute('r', 1000);
-         bg.setAttribute('fill', '#eeeeee');
-         svg.appendChild(bg);
+         const bg = document.createElementNS('http://www.w3.org/2000/svg', 'circle')
+         bg.setAttribute('r', 1000)
+         bg.setAttribute('fill', '#f9f9f9')
+         svg.appendChild(bg)
 
-         const FULL_SECTION_SIZE = 100;
-         const SECTION_BUFFER = 5;
-         const WRITE_SECTION_SIZE = FULL_SECTION_SIZE - (SECTION_BUFFER * 2);
+         const FULL_SECTION_SIZE = 100
+         const SECTION_BUFFER = 5
+         const WRITE_SECTION_SIZE = FULL_SECTION_SIZE - (SECTION_BUFFER * 2)
 
-         const max_shape_size = Math.max(a_width, a_height, b_width, b_height);
-         const box_size       = WRITE_SECTION_SIZE / (max_shape_size + 1);
-         const stroke_width   = WRITE_SECTION_SIZE / max_shape_size * 0.03;
+         const max_shape_size = Math.max(a_width, a_height, b_width, b_height)
+         const box_size       = WRITE_SECTION_SIZE / (max_shape_size + 1)
+         const stroke_width   = WRITE_SECTION_SIZE / max_shape_size * 0.03
 
          for (let shape_i = 0; shape_i < 2; shape_i++) {
-            const center_x = FULL_SECTION_SIZE * (shape_i + 0.5);
-            const center_y = FULL_SECTION_SIZE * 0.5;
 
-            const box_scale_x = (widths [shape_i]) * box_size;
-            const box_scale_y = (heights[shape_i]) * box_size;
+            const cx = FULL_SECTION_SIZE * (shape_i + 0.5)
+            const cy = FULL_SECTION_SIZE * 0.5
 
-            const upper_x = center_x + -0.5 * box_scale_x - stroke_width/2;
-            const lower_x = center_x +  0.5 * box_scale_x + stroke_width/2;
-            const upper_y = center_y + -0.5 * box_scale_y - stroke_width/2;
-            const lower_y = center_y +  0.5 * box_scale_y + stroke_width/2;
+            createGrid(svg, cx, cy, box_size, widths[shape_i], heights[shape_i], stroke_width)
 
-            for (let x = 0; x < widths[shape_i] + 1; x++) {
-               const xx = center_x + ((x / widths[shape_i]) - 0.5) * box_scale_x;
-               svg.appendChild(createLine(xx, xx, upper_y, lower_y, 'black', stroke_width));
-            }
-
-            for (let y = 0; y < heights[shape_i] + 1; y++) {
-               const yy = center_y + ((y / heights[shape_i]) - 0.5) * box_scale_y;
-               svg.appendChild(createLine(upper_x, lower_x, yy, yy, 'black', stroke_width));
-            }
-
-            const a = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+            const a = document.createElementNS('http://www.w3.org/2000/svg', 'circle')
             a.setAttribute('r', 2)
             a.setAttribute('fill', 'red')
-            a.setAttribute('cx', center_x)
-            a.setAttribute('cy', center_y)
+            a.setAttribute('cx', cx)
+            a.setAttribute('cy', cy)
             svg.appendChild(a)
          }
       }
