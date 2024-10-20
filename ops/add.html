@@ -191,10 +191,10 @@
       function create_grid(svg, cx, cy, box_size, width, height, stroke_width, box_class) {
          const box_scale_x = width  * box_size
          const box_scale_y = height * box_size
-         const upper_y = cy + -0.5 * box_scale_y
-         const lower_y = cy +  0.5 * box_scale_y
-         const upper_x = cx + -0.5 * box_scale_x
-         const lower_x = cx +  0.5 * box_scale_x
+         const upper_y = cy + -0.5 * box_scale_y - stroke_width/2
+         const lower_y = cy +  0.5 * box_scale_y + stroke_width/2
+         const upper_x = cx + -0.5 * box_scale_x - stroke_width/2
+         const lower_x = cx +  0.5 * box_scale_x + stroke_width/2
 
          var rects = []
          for (let y = 0; y < height; y++) {
@@ -210,12 +210,12 @@
 
          for (let x = 0; x < width + 1; x++) {
             const xx = cx + ((x / width) - 0.5) * box_scale_x
-            create_line(svg, xx, xx, upper_y - stroke_width/2, lower_y + stroke_width/2, 'black', stroke_width)
+            create_line(svg, xx, xx, upper_y, lower_y, 'black', stroke_width)
          }
 
          for (let y = 0; y < height + 1; y++) {
             const yy = cy + ((y / height) - 0.5) * box_scale_y
-            create_line(svg, upper_x - stroke_width/2, lower_x + stroke_width/2, yy, yy, 'black', stroke_width)
+            create_line(svg, upper_x, lower_x, yy, yy, 'black', stroke_width)
          }
 
          return rects
