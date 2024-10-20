@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+   <meta charset="UTF-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <title>Interpolate</title>
+   <style>
+      body {
+         font-family: Arial, sans-serif;
+      }
+      .grid-template {
+         display: grid;
+         grid-template-columns: repeat(2, auto);
+         gap: 20px;
+         margin-top: 20px;
+         margin: 0 auto;
+      }
+      .shape-container {
+         border: 1px solid #ccc;
+         padding: 10px;
+         border-radius: 5px;
+         background-color: #f9f9f9;
+         display: flex;
+         flex-direction: column;
+         align-items: center;
+      }
+      .label {
+         font-weight: bold;
+         margin-bottom: 5px;
+         text-align: center;
+      }
+      .gap {
+         margin-left: 20px;
+      }
+      .input-pair {
+         display: flex;
+         align-items: center;
+         justify-content: center;
+         margin-bottom: 10px;
+      }
+      .number-label {
+         width: 50px;
+         text-align: center;
+         border: 1px solid #ccc;
+         padding: 5px;
+         user-select: none;
+         background-color: #fff;
+         margin: 0 5px;
+      }
+      .svg-box {
+         width: 100%;
+         height: auto;
+         aspect-ratio: 3 / 1;
+         margin-top: 10px;
+      }
+      .color-a {
+         fill: #2398FF;
+      }
+      .color-b {
+         fill: #FF9B34;
+      }
+      .color-c {
+         fill: #378A5A;
+      }
+      button {
+         margin: 0 5px;
+      }
+      h2 {
+         margin: 0 0 10px 0;
+         text-align: center;
+      }
+      svg {
+         border: 1px solid #ccc;
+         border-radius: 5px;
+      }
+   </style>
+</head>
+<body>
+   <h1>Add</h1>
+   
+   <div class="grid-template">
+      <div class="shape-container">
+         <h2>Shape A</h2>
+         <div class="input-pair">
+            <span class="label">Width:</span>
+            <button onclick="change_value('a_width', -1)">-</button>
+            <span id="a_width" class="number-label">3</span>
+            <button onclick="change_value('a_width', 1)">+</button>
+         </div>
+         <div class="input-pair">
+            <span class="label">Height:</span>
+            <button onclick="change_value('a_height', -1)">-</button>
+            <span id="a_height" class="number-label">5</span>
+            <button onclick="change_value('a_height', 1)">+</button>
+         </div>
+      </div>
+
+      <div class="shape-container">
+         <h2>Shape B</h2>
+         <div class="input-pair">
+            <span class="label">Width:</span>
+            <button onclick="change_value('b_width', -1)">-</button>
+            <span id="b_width" class="number-label">3</span>
+            <button onclick="change_value('b_width', 1)">+</button>
+         </div>
+         <div class="input-pair">
+            <span class="label">Height:</span>
+            <button onclick="change_value('b_height', -1)">-</button>
+            <span id="b_height" class="number-label">5</span>
+            <button onclick="change_value('b_height', 1)">+</button>
+         </div>
+      </div>
+   </div>
+
+   <div class="flexbox">
+      <svg id="svg" class="svg-box" viewBox="0 0 300 100" xmlns="http://www.w3.org/2000/svg">
+      </svg>
+   </div>
+
+   <div>
+      <a id="error-label" style="color:red; padding:8px;"></a>
+   </div>
+
+   <script>
+      // constants
+      const FULL_SECTION_SIZE = 100
+      const SECTION_BUFFER = 5
+      const WRITE_SECTION_SIZE = FULL_SECTION_SIZE - (SECTION_BUFFER * 2)
+
+      const INACTIVE_STYLE = "opacity:0.3;"
+      const ACTIVE_STYLE   = "opacity:1.0;"
+
+      function change_value(id, delta) {
+         const label = document.getElementById(id)
+         let currentValue = parseInt(label.textContent)
+         let newValue = Math.max(1, Math.min(10, currentValue + delta))
+         label.textContent = newValue
+         update()
+      }
+
+      function create_line(svg, x1, x2, y1, y2, color, width) {
+         const line = document.createElementNS('http://www.w3.org/2000/svg', 'line')
+         line.setAttribute('x1', x1)
+         line.setAttribute('x2', x2)
+         line.setAttribute('y1', y1)
+         line.setAttribute('y2', y2)
+         line.setAttribute('stroke', 'black')
+         line.setAttribute('stroke-width', width)
+         svg.appendChild(line)
+         return line
+      }
+
+      function create_circle(svg, cx, cy, r, color=null, class_=null) {
+         const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle')
+         circle.setAttribute('cx', cx)
+         circle.setAttribute('cy', cy)
+         circle.setAttribute('r', r)
+         if (color  != null) circle.setAttribute('fill', color)
+         if (class_ != null) circle.setAttribute('class', class_)
+         svg.appendChild(circle)
+         return circle
+      }
+
+      function create_rect(svg, x, y, w, h, class_, style) {
+         const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect')
+         rect.setAttribute('x', x)
+         rect.setAttribute('y', y)
+         rect.setAttribute('width', w)
+         rect.setAttribute('height', h)
+         rect.setAttribute('class', class_)
+         rect.setAttribute('style', style)
+         svg.appendChild(rect)
+         return rect
+      }
+
+      function create_grid(svg, cx, cy, box_size, width, height, stroke_width, fill_class) {
+         const box_scale_x = width  * box_size
+         const box_scale_y = height * box_size
+         const upper_y = cy + -0.5 * box_scale_y - stroke_width/2
+         const lower_y = cy +  0.5 * box_scale_y + stroke_width/2
+         const upper_x = cx + -0.5 * box_scale_x - stroke_width/2
+         const lower_x = cx +  0.5 * box_scale_x + stroke_width/2
+
+         var rects  = []
+         var points = []
+         for (let y = 0; y < height; y++) {
+            var rect_row  = []
+            var point_row = []
+            for (let x = 0; x < width; x++) {
+               const xx = upper_x + box_size * x
+               const yy = upper_y + box_size * y
+               const cx = upper_x + box_size * (x + 0.5)
+               const cy = upper_y + box_size * (y + 0.5)
+               rect_row.push(create_rect(svg, xx, yy, box_size, box_size, fill_class, INACTIVE_STYLE))
+               point_row.push(create_circle(svg, cx, cy, box_size * 0.1, null, fill_class))
+            }
+            rects.push(rect_row)
+            points.push(point_row)
+         }
+
+         for (let x = 0; x < width + 1; x++) {
+            const xx = cx + ((x / width) - 0.5) * box_scale_x
+            create_line(svg, xx, xx, upper_y, lower_y, 'black', stroke_width)
+         }
+
+         for (let y = 0; y < height + 1; y++) {
+            const yy = cy + ((y / height) - 0.5) * box_scale_y
+            create_line(svg, upper_x, lower_x, yy, yy, 'black', stroke_width)
+         }
+
+         return points
+      }
+
+      function update() {
+         const error_label    = document.getElementById("error-label")
+         const c_width_label  = document.getElementById("c_width")
+         const c_height_label = document.getElementById("c_height")
+         
+         // grab width and height
+         const a_width  = parseInt(document.getElementById("a_width").textContent)
+         const a_height = parseInt(document.getElementById("a_height").textContent)
+         const b_width  = parseInt(document.getElementById("b_width").textContent)
+         const b_height = parseInt(document.getElementById("b_height").textContent)
+
+         // clear svg
+         const svg = document.getElementById("svg")
+         while (true) {
+            const child = svg.lastElementChild
+            if (!child) {
+               break
+            }
+            svg.removeChild(child)
+         }
+         create_circle(svg, 0, 0, 1000, '#f9f9f9')
+
+         // compute shapes and add
+         const max_shape_size = Math.max(a_width, a_height, b_width, b_height)
+         const box_size       = WRITE_SECTION_SIZE / (max_shape_size + 1)
+         const stroke_width   = WRITE_SECTION_SIZE / max_shape_size * 0.03
+
+         const cy =  FULL_SECTION_SIZE * 0.5
+         const cx1 = FULL_SECTION_SIZE * 1.0
+         const cx2 = FULL_SECTION_SIZE * 2.0
+         
+         const points_a = create_grid(svg, cx1, cy, box_size, a_width, a_height, stroke_width, "color-a")
+         const points_b = create_grid(svg, cx2, cy, box_size, b_width, b_height, stroke_width, "color-b")
+      }
+
+      update()
+   </script>
+</body>
+</html>
