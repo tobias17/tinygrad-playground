@@ -106,7 +106,15 @@
       </svg>
    </div>
 
+   <div>
+      <a id="error-label" style="color:red; padding:8px; visibility:visible;"></a>
+   </div>
+
    <script>
+      // constants
+      const FULL_SECTION_SIZE = 100
+      const SECTION_BUFFER = 5
+      const WRITE_SECTION_SIZE = FULL_SECTION_SIZE - (SECTION_BUFFER * 2)
       const COLOR_A = "#2398FF"
       const COLOR_B = "#FF9B34"
       const COLOR_C = "#378A5A"
@@ -141,16 +149,17 @@
 
       function create_grid(svg, cx, cy, box_size, width, height, stroke_width) {
          const box_scale_x = width  * box_size
-         const upper_x = cx + -0.5 * box_scale_x - stroke_width/2
-         const lower_x = cx +  0.5 * box_scale_x + stroke_width/2
+         const box_scale_y = height * box_size
+
+         const upper_y = cy + -0.5 * box_scale_y - stroke_width/2
+         const lower_y = cy +  0.5 * box_scale_y + stroke_width/2
          for (let x = 0; x < width + 1; x++) {
             const xx = cx + ((x / width) - 0.5) * box_scale_x
             create_line(svg, xx, xx, upper_y, lower_y, 'black', stroke_width)
          }
 
-         const box_scale_y = height * box_size
-         const upper_y = cy + -0.5 * box_scale_y - stroke_width/2
-         const lower_y = cy +  0.5 * box_scale_y + stroke_width/2
+         const upper_x = cx + -0.5 * box_scale_x - stroke_width/2
+         const lower_x = cx +  0.5 * box_scale_x + stroke_width/2
          for (let y = 0; y < height + 1; y++) {
             const yy = cy + ((y / height) - 0.5) * box_scale_y
             create_line(svg, upper_x, lower_x, yy, yy, 'black', stroke_width)
@@ -158,14 +167,17 @@
       }
 
       function update() {
+         const error_label = document.getElementById("error-label")
+         
          // grab width and height
-         const a_width  = parseInt(document.getElementById("a_width" ).textContent)
-         const a_height = parseInt(document.getElementById("a_height").textContent)
-         const b_width  = parseInt(document.getElementById("b_width" ).textContent)
-         const b_height = parseInt(document.getElementById("b_height").textContent)
-
-         const widths  = [a_width,  b_width ]
-         const heights = [a_height, b_height]
+         const widths  = [
+            parseInt(document.getElementById("a_width").textContent),
+            parseInt(document.getElementById("b_width").textContent),
+         ]
+         const heights = [
+            parseInt(document.getElementById("a_height").textContent),
+            parseInt(document.getElementById("b_height").textContent),
+         ]
 
          // clear svg
          const svg = document.getElementById("svg")
@@ -176,19 +188,12 @@
             }
             svg.removeChild(child)
          }
-         const bg = document.createElementNS('http://www.w3.org/2000/svg', 'circle')
-         bg.setAttribute('r', 1000)
-         bg.setAttribute('fill', '#f9f9f9')
-         svg.appendChild(bg)
+         create_circle(svg, 0, 0, 1000, '#f9f9f9')
 
-         const FULL_SECTION_SIZE = 100
-         const SECTION_BUFFER = 5
-         const WRITE_SECTION_SIZE = FULL_SECTION_SIZE - (SECTION_BUFFER * 2)
-
-         const max_shape_size = Math.max(a_width, a_height, b_width, b_height)
+         // compute shapes and add
+         const max_shape_size = Math.max(widths[0], widths[1], heights[0], heights[1])
          const box_size       = WRITE_SECTION_SIZE / (max_shape_size + 1)
          const stroke_width   = WRITE_SECTION_SIZE / max_shape_size * 0.03
-
          for (let shape_i = 0; shape_i < 2; shape_i++) {
             const cx = FULL_SECTION_SIZE * (shape_i + 0.5)
             const cy = FULL_SECTION_SIZE * 0.5
