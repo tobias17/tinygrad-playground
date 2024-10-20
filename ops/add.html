@@ -74,14 +74,14 @@
          <h2>Shape A</h2>
          <div class="input-pair">
             <span class="label">Width:</span>
-            <button onclick="changeValue('shapeAWidth', -1)">-</button>
-            <span id="shapeAWidth" class="number-label">3</span>
-            <button onclick="changeValue('shapeAWidth', 1)">+</button>
+            <button onclick="change_value('a_width', -1)">-</button>
+            <span id="a_width" class="number-label">3</span>
+            <button onclick="change_value('a_width', 1)">+</button>
             <span class="gap"></span>
             <span class="label">Height:</span>
-            <button onclick="changeValue('shapeAHeight', -1)">-</button>
-            <span id="shapeAHeight" class="number-label">5</span>
-            <button onclick="changeValue('shapeAHeight', 1)">+</button>
+            <button onclick="change_value('a_height', -1)">-</button>
+            <span id="a_height" class="number-label">5</span>
+            <button onclick="change_value('a_height', 1)">+</button>
          </div>
       </div>
       
@@ -89,31 +89,29 @@
          <h2>Shape B</h2>
          <div class="input-pair">
             <span class="label">Width:</span>
-            <button onclick="changeValue('shapeBWidth', -1)">-</button>
-            <span id="shapeBWidth" class="number-label">3</span>
-            <button onclick="changeValue('shapeBWidth', 1)">+</button>
+            <button onclick="change_value('b_width', -1)">-</button>
+            <span id="b_width" class="number-label">3</span>
+            <button onclick="change_value('b_width', 1)">+</button>
             <span class="gap"></span>
             <span class="label">Height:</span>
-            <button onclick="changeValue('shapeBHeight', -1)">-</button>
-            <span id="shapeBHeight" class="number-label">5</span>
-            <button onclick="changeValue('shapeBHeight', 1)">+</button>
+            <button onclick="change_value('b_height', -1)">-</button>
+            <span id="b_height" class="number-label">5</span>
+            <button onclick="change_value('b_height', 1)">+</button>
          </div>
       </div>
    </div>
 
    <div class="flexbox">
       <svg id="svg" class="svg-box" viewBox="0 0 300 100" xmlns="http://www.w3.org/2000/svg">
-         <circle cx="50" cy="50" r="800" fill="black" />
-         <circle cx="50" cy="50" r="40" fill="red" />
       </svg>
    </div>
 
    <script>
-      const COLOR_A = "#FF9B34"
-      const COLOR_B = "#2398FF"
-      const COLOR_C = "#297148"
+      const COLOR_A = "#2398FF"
+      const COLOR_B = "#FF9B34"
+      const COLOR_C = "#378A5A"
 
-      function changeValue(id, delta) {
+      function change_value(id, delta) {
          const label = document.getElementById(id)
          let currentValue = parseInt(label.textContent)
          let newValue = Math.max(1, Math.min(10, currentValue + delta))
@@ -121,7 +119,7 @@
          update()
       }
 
-      function createLine(svg, x1, x2, y1, y2, color, width) {
+      function create_line(svg, x1, x2, y1, y2, color, width) {
          const line = document.createElementNS('http://www.w3.org/2000/svg', 'line')
          line.setAttribute('x1', x1)
          line.setAttribute('x2', x2)
@@ -132,36 +130,39 @@
          svg.appendChild(line)
       }
 
-      function createCircle() {
-
+      function create_circle(svg, cx, cy, r, color) {
+         const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle')
+         circle.setAttribute('cx', cx)
+         circle.setAttribute('cy', cy)
+         circle.setAttribute('r', r)
+         circle.setAttribute('fill', color)
+         svg.appendChild(circle)
       }
 
-      function createGrid(svg, cx, cy, box_size, width, height, stroke_width) {
+      function create_grid(svg, cx, cy, box_size, width, height, stroke_width) {
          const box_scale_x = width  * box_size
-         const box_scale_y = height * box_size
-
          const upper_x = cx + -0.5 * box_scale_x - stroke_width/2
          const lower_x = cx +  0.5 * box_scale_x + stroke_width/2
-         const upper_y = cy + -0.5 * box_scale_y - stroke_width/2
-         const lower_y = cy +  0.5 * box_scale_y + stroke_width/2
-
          for (let x = 0; x < width + 1; x++) {
             const xx = cx + ((x / width) - 0.5) * box_scale_x
-            createLine(svg, xx, xx, upper_y, lower_y, 'black', stroke_width)
+            create_line(svg, xx, xx, upper_y, lower_y, 'black', stroke_width)
          }
 
+         const box_scale_y = height * box_size
+         const upper_y = cy + -0.5 * box_scale_y - stroke_width/2
+         const lower_y = cy +  0.5 * box_scale_y + stroke_width/2
          for (let y = 0; y < height + 1; y++) {
             const yy = cy + ((y / height) - 0.5) * box_scale_y
-            createLine(svg, upper_x, lower_x, yy, yy, 'black', stroke_width)
+            create_line(svg, upper_x, lower_x, yy, yy, 'black', stroke_width)
          }
       }
 
       function update() {
          // grab width and height
-         const a_width  = parseInt(document.getElementById("shapeAWidth" ).textContent)
-         const a_height = parseInt(document.getElementById("shapeAHeight").textContent)
-         const b_width  = parseInt(document.getElementById("shapeBWidth" ).textContent)
-         const b_height = parseInt(document.getElementById("shapeBHeight").textContent)
+         const a_width  = parseInt(document.getElementById("a_width" ).textContent)
+         const a_height = parseInt(document.getElementById("a_height").textContent)
+         const b_width  = parseInt(document.getElementById("b_width" ).textContent)
+         const b_height = parseInt(document.getElementById("b_height").textContent)
 
          const widths  = [a_width,  b_width ]
          const heights = [a_height, b_height]
@@ -189,21 +190,15 @@
          const stroke_width   = WRITE_SECTION_SIZE / max_shape_size * 0.03
 
          for (let shape_i = 0; shape_i < 2; shape_i++) {
-
             const cx = FULL_SECTION_SIZE * (shape_i + 0.5)
             const cy = FULL_SECTION_SIZE * 0.5
-
-            createGrid(svg, cx, cy, box_size, widths[shape_i], heights[shape_i], stroke_width)
-
-            const a = document.createElementNS('http://www.w3.org/2000/svg', 'circle')
-            a.setAttribute('r', 2)
-            a.setAttribute('fill', 'red')
-            a.setAttribute('cx', cx)
-            a.setAttribute('cy', cy)
-            svg.appendChild(a)
+            create_grid(svg, cx, cy, box_size, widths[shape_i], heights[shape_i], stroke_width)
+            create_circle(svg, cx, cy, 2, 'red')
          }
       }
+
       update()
+
    </script>
 </body>
 </html>
