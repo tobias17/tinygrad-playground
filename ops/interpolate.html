@@ -76,7 +76,7 @@
    </style>
 </head>
 <body>
-   <h1>Add</h1>
+   <h1>Interpolate</h1>
    
    <div class="grid-template">
       <div class="shape-container">
@@ -127,8 +127,8 @@
       const SECTION_BUFFER = 5
       const WRITE_SECTION_SIZE = FULL_SECTION_SIZE - (SECTION_BUFFER * 2)
 
-      const INACTIVE_STYLE = "opacity:0.3;"
-      const ACTIVE_STYLE   = "opacity:1.0;"
+      const INACTIVE_STYLE = "opacity:0.2;"
+      const ACTIVE_STYLE   = "opacity:0.4;"
 
       function change_value(id, delta) {
          const label = document.getElementById(id)
@@ -208,7 +208,7 @@
             create_line(svg, upper_x, lower_x, yy, yy, 'black', stroke_width)
          }
 
-         return points
+         return [rects, points]
       }
 
       function update() {
@@ -242,8 +242,33 @@
          const cx1 = FULL_SECTION_SIZE * 1.0
          const cx2 = FULL_SECTION_SIZE * 2.0
          
-         const points_a = create_grid(svg, cx1, cy, box_size, a_width, a_height, stroke_width, "color-a")
-         const points_b = create_grid(svg, cx2, cy, box_size, b_width, b_height, stroke_width, "color-b")
+         const rects_points_a = create_grid(svg, cx1, cy, box_size, a_width, a_height, stroke_width, "color-a")
+         const rects_points_b = create_grid(svg, cx2, cy, box_size, b_width, b_height, stroke_width, "color-b")
+
+         const marker = create_circle(svg, -100, -100, rects_points_a[1][0][0].getAttribute("r"), null, 'color-b')
+
+         function get_corners(point_arr) {
+            const last = point_arr[point_arr.length - 1]
+            const tl_x = parseInt(point_arr[0][0].getAttribute("cx"))
+            const tl_y = parseInt(point_arr[0][0].getAttribute("cy"))
+            const br_x = parseInt(last[last.length - 1].getAttribute("cx"))
+            const br_y = parseInt(last[last.length - 1].getAttribute("cy"))
+            return [tl_x, br_x, tl_y, br_y]
+         }
+
+         const corners_a = get_corners(rects_points_a[1])
+         const corners_b = get_corners(rects_points_b[1])
+         for (let x = 0; x < b_width; x++) {
+            for (let y = 0; y < b_width; y++) {
+               const px_a = (parseInt(rects_points_a[1][x][y].getAttribute("cx")) - corners_a[0]) / (corners_a[1] - corners_a[0])
+               const py_a = (parseInt(rects_points_a[1][x][y].getAttribute("cy")) - corners_a[2]) / (corners_a[3] - corners_a[2])
+
+               const xx = corners_b[0] + px_a * (corners_b[1] - corners_b[0])
+               const yy = corners_b[2] + py_a * (corners_b[3] - corners_b[2])
+
+               create_circle(svg, xx, yy, rects_points_a[1][0][0].getAttribute("r"), null, 'color-b')
+            }
+         }
       }
 
       update()
