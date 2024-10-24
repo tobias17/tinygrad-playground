@@ -84,13 +84,13 @@
          <div class="input-pair">
             <span class="label">Width:</span>
             <button onclick="change_value('a_width', -1)">-</button>
-            <span id="a_width" class="number-label">3</span>
+            <span id="a_width" class="number-label">4</span>
             <button onclick="change_value('a_width', 1)">+</button>
          </div>
          <div class="input-pair">
             <span class="label">Height:</span>
             <button onclick="change_value('a_height', -1)">-</button>
-            <span id="a_height" class="number-label">5</span>
+            <span id="a_height" class="number-label">6</span>
             <button onclick="change_value('a_height', 1)">+</button>
          </div>
       </div>
@@ -127,8 +127,10 @@
       const SECTION_BUFFER = 5
       const WRITE_SECTION_SIZE = FULL_SECTION_SIZE - (SECTION_BUFFER * 2)
 
+      const HIDDEN_STYLE   = "opacity:0.0;"
       const INACTIVE_STYLE = "opacity:0.2;"
       const ACTIVE_STYLE   = "opacity:0.4;"
+      const FULL_STYLE     = "opacity:1.0;"
 
       function change_value(id, delta) {
          const label = document.getElementById(id)
@@ -266,7 +268,45 @@
                const xx = corners_a[0] + px_b * (corners_a[1] - corners_a[0])
                const yy = corners_a[2] + py_b * (corners_a[3] - corners_a[2])
 
-               create_circle(svg, xx, yy, rects_points_b[1][0][0].getAttribute("r"), null, 'color-b')
+               const c = create_circle(svg, xx, yy, rects_points_b[1][0][0].getAttribute("r"), null, 'color-b')
+
+               var x1 = Math.floor(px_b * (a_width  - 1))
+               var x2 = Math.ceil (px_b * (a_width  - 1))
+               var y1 = Math.floor(py_b * (a_height - 1))
+               var y2 = Math.ceil (py_b * (a_height - 1))
+
+               if (x1 == x2) {
+                  if (x1 == 0) x2 = 1
+                  else x1 = x2 - 1
+               }
+               if (y1 == y2) {
+                  if (y1 == 0) y2 = 1
+                  else y1 = y2 - 1
+               }
+
+               console.log(px_b, py_b, a_width, a_height)
+               console.log(x1, x2, y1, y2)
+               const overlap_squares = [
+                  rects_points_a[0][y1][x1],
+                  rects_points_a[0][y1][x2],
+                  rects_points_a[0][y2][x1],
+                  rects_points_a[0][y2][x2],
+               ]
+
+               rects_points_b[1][y][x].setAttribute('pointer-events', 'none')
+
+               rects_points_b[0][y][x].onmouseenter = function() {
+                  rects_points_b[0][y][x].setAttribute("style", ACTIVE_STYLE)
+                  overlap_squares.forEach(function(s) {
+                     s.setAttribute("style", ACTIVE_STYLE)
+                  })
+               }
+               rects_points_b[0][y][x].onmouseleave = function() {
+                  rects_points_b[0][y][x].setAttribute("style", INACTIVE_STYLE)
+                  overlap_squares.forEach(function(s) {
+                     s.setAttribute("style", INACTIVE_STYLE)
+                  })
+               }
             }
          }
       }
