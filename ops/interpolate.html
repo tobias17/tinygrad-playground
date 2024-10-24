@@ -183,22 +183,22 @@
          const upper_x = cx + -0.5 * box_scale_x - stroke_width/2
          const lower_x = cx +  0.5 * box_scale_x + stroke_width/2
 
-         var rects  = []
-         var points = []
-         for (let y = 0; y < height; y++) {
-            var rect_row  = []
-            var point_row = []
-            for (let x = 0; x < width; x++) {
-               const xx = upper_x + box_size * x
-               const yy = upper_y + box_size * y
-               const cx = upper_x + box_size * (x + 0.5)
-               const cy = upper_y + box_size * (y + 0.5)
-               rect_row.push(create_rect(svg, xx, yy, box_size, box_size, fill_class, INACTIVE_STYLE))
-               point_row.push(create_circle(svg, cx, cy, box_size * 0.1, null, fill_class))
-            }
-            rects.push(rect_row)
-            points.push(point_row)
-         }
+         // var rects  = []
+         // var points = []
+         // for (let y = 0; y < height; y++) {
+         //    var rect_row  = []
+         //    var point_row = []
+         //    for (let x = 0; x < width; x++) {
+         //       const xx = upper_x + box_size * x
+         //       const yy = upper_y + box_size * y
+         //       const cx = upper_x + box_size * (x + 0.5)
+         //       const cy = upper_y + box_size * (y + 0.5)
+         //       rect_row.push(create_rect(svg, xx, yy, box_size, box_size, fill_class, INACTIVE_STYLE))
+         //       point_row.push(create_circle(svg, cx, cy, box_size * 0.1, null, fill_class))
+         //    }
+         //    rects.push(rect_row)
+         //    points.push(point_row)
+         // }
 
          for (let x = 0; x < width + 1; x++) {
             const xx = cx + ((x / width) - 0.5) * box_scale_x
@@ -210,7 +210,20 @@
             create_line(svg, upper_x, lower_x, yy, yy, 'black', stroke_width)
          }
 
-         return [rects, points]
+         // return [rects, points]
+      }
+
+      function fill_grid(cx, cy, box_size, width, height, fnx) {
+         const box_scale_x = width  * box_size
+         const box_scale_y = height * box_size
+         const upper_y = cy + -0.5 * box_scale_y
+         const upper_x = cx + -0.5 * box_scale_x
+
+         for (let y = 0; y < height; y++) {
+            for (let x = 0; x < width; x++) {
+               fnx(x, y, upper_x + box_size * x, upper_y + box_size * y)
+            }
+         }
       }
 
       function update() {
@@ -239,76 +252,103 @@
          const max_shape_size = Math.max(a_width, a_height, b_width, b_height)
          const box_size       = WRITE_SECTION_SIZE / (max_shape_size + 1)
          const stroke_width   = WRITE_SECTION_SIZE / max_shape_size * 0.03
+         const point_size     = box_size * 0.1
 
          const cy =  FULL_SECTION_SIZE * 0.5
          const cx1 = FULL_SECTION_SIZE * 1.0
          const cx2 = FULL_SECTION_SIZE * 2.0
          
-         const rects_points_a = create_grid(svg, cx1, cy, box_size, a_width, a_height, stroke_width, 'color-a')
-         const rects_points_b = create_grid(svg, cx2, cy, box_size, b_width, b_height, stroke_width, 'color-b')
-
-         const marker = create_circle(svg, -100, -100, rects_points_a[1][0][0].getAttribute("r"), null, 'color-b')
-
-         function get_corners(point_arr) {
-            const last = point_arr[point_arr.length - 1]
-            const tl_x = parseFloat(point_arr[0][0].getAttribute("cx"))
-            const tl_y = parseFloat(point_arr[0][0].getAttribute("cy"))
-            const br_x = parseFloat(last[last.length - 1].getAttribute("cx"))
-            const br_y = parseFloat(last[last.length - 1].getAttribute("cy"))
-            return [tl_x, br_x, tl_y, br_y]
+         const rects_a  = []
+         const points_a = []
+         for (let i = 0; i < a_height; i++) {
+            rects_a .push([])
+            points_a.push([])
+         }
+         const rects_b  = []
+         const points_b = []
+         for (let i = 0; i < b_height; i++) {
+            rects_b .push([])
+            points_b.push([])
          }
 
-         const corners_a = get_corners(rects_points_a[1])
-         const corners_b = get_corners(rects_points_b[1])
-         for (let x = 0; x < b_width; x++) {
-            for (let y = 0; y < b_height; y++) {
-               const px_b = (parseFloat(rects_points_b[1][y][x].getAttribute("cx")) - corners_b[0]) / (corners_b[1] - corners_b[0])
-               const py_b = (parseFloat(rects_points_b[1][y][x].getAttribute("cy")) - corners_b[2]) / (corners_b[3] - corners_b[2])
+         fill_grid(cx1, cy, box_size, a_width, a_height, function(x, y, xx, yy) {
+            rects_a[y].push(create_rect(svg, xx, yy, box_size, box_size, 'color-a', INACTIVE_STYLE))
+         })
+         fill_grid(cx2, cy, box_size, b_width, b_height, function(x, y, xx, yy) {
+            rects_b[y].push(create_rect(svg, xx, yy, box_size, box_size, 'color-b', INACTIVE_STYLE))
+         })
 
-               const xx = corners_a[0] + px_b * (corners_a[1] - corners_a[0])
-               const yy = corners_a[2] + py_b * (corners_a[3] - corners_a[2])
+         create_grid(svg, cx1, cy, box_size, a_width, a_height, stroke_width, 'color-a')
+         create_grid(svg, cx2, cy, box_size, b_width, b_height, stroke_width, 'color-b')
 
-               const c = create_circle(svg, xx, yy, rects_points_b[1][0][0].getAttribute("r"), null, 'color-b')
+         fill_grid(cx1, cy, box_size, a_width, a_height, function(x, y, xx, yy) {
+            points_a[y].push(create_circle(svg, xx + box_size/2, yy + box_size/2, point_size, null, 'color-a'))
+         })
+         fill_grid(cx2, cy, box_size, b_width, b_height, function(x, y, xx, yy) {
+            points_b[y].push(create_circle(svg, xx + box_size/2, yy + box_size/2, point_size, null, 'color-b'))
+         })
 
-               var x1 = Math.floor(px_b * (a_width  - 1))
-               var x2 = Math.ceil (px_b * (a_width  - 1))
-               var y1 = Math.floor(py_b * (a_height - 1))
-               var y2 = Math.ceil (py_b * (a_height - 1))
 
-               if (x1 == x2) {
-                  if (x1 == 0) x2 = 1
-                  else x1 = x2 - 1
-               }
-               if (y1 == y2) {
-                  if (y1 == 0) y2 = 1
-                  else y1 = y2 - 1
-               }
+         // function get_corners(point_arr) {
+         //    const last = point_arr[point_arr.length - 1]
+         //    const tl_x = parseFloat(point_arr[0][0].getAttribute("cx"))
+         //    const tl_y = parseFloat(point_arr[0][0].getAttribute("cy"))
+         //    const br_x = parseFloat(last[last.length - 1].getAttribute("cx"))
+         //    const br_y = parseFloat(last[last.length - 1].getAttribute("cy"))
+         //    return [tl_x, br_x, tl_y, br_y]
+         // }
 
-               console.log(px_b, py_b, a_width, a_height)
-               console.log(x1, x2, y1, y2)
-               const overlap_squares = [
-                  rects_points_a[0][y1][x1],
-                  rects_points_a[0][y1][x2],
-                  rects_points_a[0][y2][x1],
-                  rects_points_a[0][y2][x2],
-               ]
+         // const corners_a = get_corners(rects_points_a[1])
+         // const corners_b = get_corners(rects_points_b[1])
+         // for (let x = 0; x < b_width; x++) {
+         //    for (let y = 0; y < b_height; y++) {
+         //       const px_b = (parseFloat(rects_points_b[1][y][x].getAttribute("cx")) - corners_b[0]) / (corners_b[1] - corners_b[0])
+         //       const py_b = (parseFloat(rects_points_b[1][y][x].getAttribute("cy")) - corners_b[2]) / (corners_b[3] - corners_b[2])
 
-               rects_points_b[1][y][x].setAttribute('pointer-events', 'none')
+         //       const xx = corners_a[0] + px_b * (corners_a[1] - corners_a[0])
+         //       const yy = corners_a[2] + py_b * (corners_a[3] - corners_a[2])
 
-               rects_points_b[0][y][x].onmouseenter = function() {
-                  rects_points_b[0][y][x].setAttribute("style", ACTIVE_STYLE)
-                  overlap_squares.forEach(function(s) {
-                     s.setAttribute("style", ACTIVE_STYLE)
-                  })
-               }
-               rects_points_b[0][y][x].onmouseleave = function() {
-                  rects_points_b[0][y][x].setAttribute("style", INACTIVE_STYLE)
-                  overlap_squares.forEach(function(s) {
-                     s.setAttribute("style", INACTIVE_STYLE)
-                  })
-               }
-            }
-         }
+         //       const c = create_circle(svg, xx, yy, rects_points_b[1][0][0].getAttribute("r"), null, 'color-b')
+
+         //       var x1 = Math.floor(px_b * (a_width  - 1))
+         //       var x2 = Math.ceil (px_b * (a_width  - 1))
+         //       var y1 = Math.floor(py_b * (a_height - 1))
+         //       var y2 = Math.ceil (py_b * (a_height - 1))
+
+         //       if (x1 == x2) {
+         //          if (x1 == 0) x2 = 1
+         //          else x1 = x2 - 1
+         //       }
+         //       if (y1 == y2) {
+         //          if (y1 == 0) y2 = 1
+         //          else y1 = y2 - 1
+         //       }
+
+         //       console.log(px_b, py_b, a_width, a_height)
+         //       console.log(x1, x2, y1, y2)
+         //       const overlap_squares = [
+         //          rects_points_a[0][y1][x1],
+         //          rects_points_a[0][y1][x2],
+         //          rects_points_a[0][y2][x1],
+         //          rects_points_a[0][y2][x2],
+         //       ]
+
+         //       rects_points_b[1][y][x].setAttribute('pointer-events', 'none')
+
+         //       rects_points_b[0][y][x].onmouseenter = function() {
+         //          rects_points_b[0][y][x].setAttribute("style", ACTIVE_STYLE)
+         //          overlap_squares.forEach(function(s) {
+         //             s.setAttribute("style", ACTIVE_STYLE)
+         //          })
+         //       }
+         //       rects_points_b[0][y][x].onmouseleave = function() {
+         //          rects_points_b[0][y][x].setAttribute("style", INACTIVE_STYLE)
+         //          overlap_squares.forEach(function(s) {
+         //             s.setAttribute("style", INACTIVE_STYLE)
+         //          })
+         //       }
+         //    }
+         // }
       }
 
       update()
