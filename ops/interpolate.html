@@ -249,10 +249,10 @@
 
          function get_corners(point_arr) {
             const last = point_arr[point_arr.length - 1]
-            const tl_x = parseInt(point_arr[0][0].getAttribute("cx"))
-            const tl_y = parseInt(point_arr[0][0].getAttribute("cy"))
-            const br_x = parseInt(last[last.length - 1].getAttribute("cx"))
-            const br_y = parseInt(last[last.length - 1].getAttribute("cy"))
+            const tl_x = parseFloat(point_arr[0][0].getAttribute("cx"))
+            const tl_y = parseFloat(point_arr[0][0].getAttribute("cy"))
+            const br_x = parseFloat(last[last.length - 1].getAttribute("cx"))
+            const br_y = parseFloat(last[last.length - 1].getAttribute("cy"))
             return [tl_x, br_x, tl_y, br_y]
          }
 
@@ -260,8 +260,8 @@
          const corners_b = get_corners(rects_points_b[1])
          for (let x = 0; x < b_width; x++) {
             for (let y = 0; y < b_height; y++) {
-               const px_b = (parseInt(rects_points_b[1][y][x].getAttribute("cx")) - corners_b[0]) / (corners_b[1] - corners_b[0])
-               const py_b = (parseInt(rects_points_b[1][y][x].getAttribute("cy")) - corners_b[2]) / (corners_b[3] - corners_b[2])
+               const px_b = (parseFloat(rects_points_b[1][y][x].getAttribute("cx")) - corners_b[0]) / (corners_b[1] - corners_b[0])
+               const py_b = (parseFloat(rects_points_b[1][y][x].getAttribute("cy")) - corners_b[2]) / (corners_b[3] - corners_b[2])
 
                const xx = corners_a[0] + px_b * (corners_a[1] - corners_a[0])
                const yy = corners_a[2] + py_b * (corners_a[3] - corners_a[2])
