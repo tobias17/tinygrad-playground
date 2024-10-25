@@ -320,7 +320,7 @@
             const their_x = corners_a[0] + px_b * (corners_a[2] - corners_a[0])
             const their_y = corners_a[1] + py_b * (corners_a[3] - corners_a[1])
             const c = create_circle(svg, their_x, their_y, point_size, null, 'color-b')
-
+            c.setAttribute("style", HIDDEN_STYLE)
 
             var x1 = Math.floor(px_b * (a_width  - 1))
             var x2 = Math.ceil (px_b * (a_width  - 1))
@@ -365,6 +365,8 @@
                horz_line.setAttribute("x2", pos_a[y1][x2][0])
                horz_line.setAttribute("y1", their_y)
                horz_line.setAttribute("y2", their_y)
+
+               c.setAttribute("style", FULL_STYLE)
             }
             rects_b[y][x].onmouseleave = function() {
                rects_b[y][x].setAttribute("style", INACTIVE_STYLE)
@@ -374,6 +376,8 @@
                vert_line1.setAttribute("style", HIDDEN_STYLE)
                vert_line2.setAttribute("style", HIDDEN_STYLE)
                horz_line .setAttribute("style", HIDDEN_STYLE)
+
+               c.setAttribute("style", HIDDEN_STYLE)
             }
          })
 
