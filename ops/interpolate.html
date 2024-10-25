@@ -303,16 +303,19 @@
                corners_b[3] = Math.max(corners_b[3], our_y)
             }
          })
-         const e1_a = pos_a[0][a_width]
-         const e2_a = pos_a[a_height-1][a_width]
-         create_circle(svg, e1_a[0], e1_a[1], point_size*0.6, 'red')
-         create_circle(svg, e2_a[0], e2_a[1], point_size*0.6, 'red')
-         create_line(svg, e1_a[0], e2_a[0], e1_a[1], e2_a[1], 'red', stroke_width)
-         const e1_b = pos_b[0][b_width]
-         const e2_b = pos_b[b_height-1][b_width]
-         create_circle(svg, e1_b[0], e1_b[1], point_size*0.6, 'red')
-         create_circle(svg, e2_b[0], e2_b[1], point_size*0.6, 'red')
-         create_line(svg, e1_b[0], e2_b[0], e1_b[1], e2_b[1], 'red', stroke_width)
+         const z = [[a_width, a_height, pos_a], [b_width, b_height, pos_b]]
+         z.forEach(function(z) {
+            const z_width  = z[0]
+            const z_height = z[1]
+            const pos_z    = z[2]
+            for (let vert = 0; vert < 2; vert++) {
+               const e1 = vert == 0 ? pos_z[z_height][0]         : pos_z[0][z_width]
+               const e2 = vert == 0 ? pos_z[z_height][z_width-1] : pos_z[z_height-1][z_width]
+               create_circle(svg, e1[0], e1[1], point_size*0.6, 'red')
+               create_circle(svg, e2[0], e2[1], point_size*0.6, 'red')
+               create_line(svg, e1[0], e2[0], e1[1], e2[1], 'red', stroke_width)
+            }
+         })
          fill_grid(cx2, cy, box_size, b_width+1, b_height+1, function(x, y, xx, yy) {
             if (x < b_width && y < b_height) {
                const our_x = xx + box_size/2
