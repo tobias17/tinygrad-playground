@@ -240,7 +240,7 @@
          const cx1 = FULL_SECTION_SIZE * 1.0
          const cx2 = FULL_SECTION_SIZE * 2.0
          
-         const pos_a = []
+         const pos_a    = [[]]
          const rects_a  = []
          const points_a = []
          for (let i = 0; i < a_height; i++) {
@@ -248,9 +248,11 @@
             rects_a .push([])
             points_a.push([])
          }
+         const pos_b    = [[]]
          const rects_b  = []
          const points_b = []
          for (let i = 0; i < b_height; i++) {
+            pos_b   .push([])
             rects_b .push([])
             points_b.push([])
          }
@@ -276,10 +278,10 @@
          const corners_a = [WRITE_SECTION_SIZE*3, WRITE_SECTION_SIZE*3, 0, 0]
          const corners_b = [WRITE_SECTION_SIZE*3, WRITE_SECTION_SIZE*3, 0, 0]
          fill_grid(cx1, cy, box_size, a_width+1, a_height+1, function(x, y, xx, yy) {
+            const our_x = xx + box_size/2
+            const our_y = yy + box_size/2
+            pos_a[y].push([our_x, our_y])
             if (x < a_width && y < a_height) {
-               const our_x = xx + box_size/2
-               const our_y = yy + box_size/2
-               pos_a[y].push([our_x, our_y])
                points_a[y].push(create_circle(svg, our_x, our_y, point_size, null, 'color-a'))
                corners_a[0] = Math.min(corners_a[0], our_x)
                corners_a[1] = Math.min(corners_a[1], our_y)
@@ -288,18 +290,29 @@
             }
          })
          fill_grid(cx2, cy, box_size, b_width+1, b_height+1, function(x, y, xx, yy) {
+            const our_x = xx + box_size/2
+            const our_y = yy + box_size/2
+            pos_b[y].push([our_x, our_y])
             if (x < b_width && y < b_height) {
-               const our_x = xx + box_size/2
-               const our_y = yy + box_size/2
                const c = create_circle(svg, our_x, our_y, point_size, null, 'color-b')
-               points_b[y].push(c)
                c.setAttribute('pointer-events', 'none')
+               points_b[y].push(c)
                corners_b[0] = Math.min(corners_b[0], our_x)
                corners_b[1] = Math.min(corners_b[1], our_y)
                corners_b[2] = Math.max(corners_b[2], our_x)
                corners_b[3] = Math.max(corners_b[3], our_y)
             }
          })
+         const e1_a = pos_a[0][a_width]
+         const e2_a = pos_a[a_height-1][a_width]
+         create_circle(svg, e1_a[0], e1_a[1], point_size*0.6, 'red')
+         create_circle(svg, e2_a[0], e2_a[1], point_size*0.6, 'red')
+         create_line(svg, e1_a[0], e2_a[0], e1_a[1], e2_a[1], 'red', stroke_width)
+         const e1_b = pos_b[0][b_width]
+         const e2_b = pos_b[b_height-1][b_width]
+         create_circle(svg, e1_b[0], e1_b[1], point_size*0.6, 'red')
+         create_circle(svg, e2_b[0], e2_b[1], point_size*0.6, 'red')
+         create_line(svg, e1_b[0], e2_b[0], e1_b[1], e2_b[1], 'red', stroke_width)
          fill_grid(cx2, cy, box_size, b_width+1, b_height+1, function(x, y, xx, yy) {
             if (x < b_width && y < b_height) {
                const our_x = xx + box_size/2
