@@ -176,42 +176,23 @@
          return rect
       }
 
-      function create_grid(svg, cx, cy, box_size, width, height, stroke_width, fill_class) {
+      function create_grid(svg, cx, cy, box_size, width, height, stroke_width, inlets=[0,0,0,0]) {
          const box_scale_x = width  * box_size
          const box_scale_y = height * box_size
-         const upper_y = cy + -0.5 * box_scale_y - stroke_width/2
-         const lower_y = cy +  0.5 * box_scale_y + stroke_width/2
-         const upper_x = cx + -0.5 * box_scale_x - stroke_width/2
-         const lower_x = cx +  0.5 * box_scale_x + stroke_width/2
+         const upper_y = cy + -0.5 * box_scale_y - stroke_width/2 + inlets[2]*box_size
+         const lower_y = cy +  0.5 * box_scale_y + stroke_width/2 - inlets[3]*box_size
+         const upper_x = cx + -0.5 * box_scale_x - stroke_width/2 + inlets[0]*box_size
+         const lower_x = cx +  0.5 * box_scale_x + stroke_width/2 - inlets[1]*box_size
 
-         // var rects  = []
-         // var points = []
-         // for (let y = 0; y < height; y++) {
-         //    var rect_row  = []
-         //    var point_row = []
-         //    for (let x = 0; x < width; x++) {
-         //       const xx = upper_x + box_size * x
-         //       const yy = upper_y + box_size * y
-         //       const cx = upper_x + box_size * (x + 0.5)
-         //       const cy = upper_y + box_size * (y + 0.5)
-         //       rect_row.push(create_rect(svg, xx, yy, box_size, box_size, fill_class, INACTIVE_STYLE))
-         //       point_row.push(create_circle(svg, cx, cy, box_size * 0.1, null, fill_class))
-         //    }
-         //    rects.push(rect_row)
-         //    points.push(point_row)
-         // }
-
-         for (let x = 0; x < width + 1; x++) {
+         for (let x = 0 + inlets[0]; x < width + 1 - inlets[1]; x++) {
             const xx = cx + ((x / width) - 0.5) * box_scale_x
             create_line(svg, xx, xx, upper_y, lower_y, 'black', stroke_width)
          }
 
-         for (let y = 0; y < height + 1; y++) {
+         for (let y = 0 + inlets[2]; y < height + 1 - inlets[3]; y++) {
             const yy = cy + ((y / height) - 0.5) * box_scale_y
             create_line(svg, upper_x, lower_x, yy, yy, 'black', stroke_width)
          }
-
-         // return [rects, points]
       }
 
       function fill_grid(cx, cy, box_size, width, height, fnx) {
@@ -250,7 +231,7 @@
          create_circle(svg, 0, 0, 1000, '#f9f9f9')
 
          // compute shapes and add
-         const max_shape_size = Math.max(a_width, a_height, b_width, b_height)
+         const max_shape_size = Math.max(a_width, a_height, b_width, b_height) + 1
          const box_size       = WRITE_SECTION_SIZE / (max_shape_size + 1)
          const stroke_width   = WRITE_SECTION_SIZE / max_shape_size * 0.03
          const point_size     = box_size * 0.1
@@ -274,15 +255,19 @@
             points_b.push([])
          }
 
-         fill_grid(cx1, cy, box_size, a_width, a_height, function(x, y, xx, yy) {
-            rects_a[y].push(create_rect(svg, xx, yy, box_size, box_size, 'color-a', INACTIVE_STYLE))
+         fill_grid(cx1, cy, box_size, a_width+1, a_height+1, function(x, y, xx, yy) {
+            if (x < a_width && y < a_height) {
+               rects_a[y].push(create_rect(svg, xx, yy, box_size, box_size, 'color-a', INACTIVE_STYLE))
+            }
          })
-         fill_grid(cx2, cy, box_size, b_width, b_height, function(x, y, xx, yy) {
-            rects_b[y].push(create_rect(svg, xx, yy, box_size, box_size, 'color-b', INACTIVE_STYLE))
+         fill_grid(cx2, cy, box_size, b_width+1, b_height+1, function(x, y, xx, yy) {
+            if (x < b_width && y < b_height) {
+               rects_b[y].push(create_rect(svg, xx, yy, box_size, box_size, 'color-b', INACTIVE_STYLE))
+            }
          })
 
-         create_grid(svg, cx1, cy, box_size, a_width, a_height, stroke_width, 'color-a')
-         create_grid(svg, cx2, cy, box_size, b_width, b_height, stroke_width, 'color-b')
+         create_grid(svg, cx1, cy, box_size, a_width+1, a_height+1, stroke_width, [0,1,0,1])
+         create_grid(svg, cx2, cy, box_size, b_width+1, b_height+1, stroke_width, [0,1,0,1])
 
          const vert_line1 = create_line(svg, 0, 0, 0, 0, 'black', stroke_width*2, HIDDEN_STYLE)
          const vert_line2 = create_line(svg, 0, 0, 0, 0, 'black', stroke_width*2, HIDDEN_STYLE)
@@ -290,94 +275,100 @@
 
          const corners_a = [WRITE_SECTION_SIZE*3, WRITE_SECTION_SIZE*3, 0, 0]
          const corners_b = [WRITE_SECTION_SIZE*3, WRITE_SECTION_SIZE*3, 0, 0]
-         fill_grid(cx1, cy, box_size, a_width, a_height, function(x, y, xx, yy) {
-            const our_x = xx + box_size/2
-            const our_y = yy + box_size/2
-            pos_a[y].push([our_x, our_y])
-            points_a[y].push(create_circle(svg, our_x, our_y, point_size, null, 'color-a'))
-            corners_a[0] = Math.min(corners_a[0], our_x)
-            corners_a[1] = Math.min(corners_a[1], our_y)
-            corners_a[2] = Math.max(corners_a[2], our_x)
-            corners_a[3] = Math.max(corners_a[3], our_y)
+         fill_grid(cx1, cy, box_size, a_width+1, a_height+1, function(x, y, xx, yy) {
+            if (x < a_width && y < a_height) {
+               const our_x = xx + box_size/2
+               const our_y = yy + box_size/2
+               pos_a[y].push([our_x, our_y])
+               points_a[y].push(create_circle(svg, our_x, our_y, point_size, null, 'color-a'))
+               corners_a[0] = Math.min(corners_a[0], our_x)
+               corners_a[1] = Math.min(corners_a[1], our_y)
+               corners_a[2] = Math.max(corners_a[2], our_x)
+               corners_a[3] = Math.max(corners_a[3], our_y)
+            }
          })
-         fill_grid(cx2, cy, box_size, b_width, b_height, function(x, y, xx, yy) {
-            const our_x = xx + box_size/2
-            const our_y = yy + box_size/2
-            const c = create_circle(svg, our_x, our_y, point_size, null, 'color-b')
-            points_b[y].push(c)
-            c.setAttribute('pointer-events', 'none')
-            corners_b[0] = Math.min(corners_b[0], our_x)
-            corners_b[1] = Math.min(corners_b[1], our_y)
-            corners_b[2] = Math.max(corners_b[2], our_x)
-            corners_b[3] = Math.max(corners_b[3], our_y)
+         fill_grid(cx2, cy, box_size, b_width+1, b_height+1, function(x, y, xx, yy) {
+            if (x < b_width && y < b_height) {
+               const our_x = xx + box_size/2
+               const our_y = yy + box_size/2
+               const c = create_circle(svg, our_x, our_y, point_size, null, 'color-b')
+               points_b[y].push(c)
+               c.setAttribute('pointer-events', 'none')
+               corners_b[0] = Math.min(corners_b[0], our_x)
+               corners_b[1] = Math.min(corners_b[1], our_y)
+               corners_b[2] = Math.max(corners_b[2], our_x)
+               corners_b[3] = Math.max(corners_b[3], our_y)
+            }
          })
-         fill_grid(cx2, cy, box_size, b_width, b_height, function(x, y, xx, yy) {
-            const our_x = xx + box_size/2
-            const our_y = yy + box_size/2
-            const px_b = (our_x - corners_b[0]) / (corners_b[2] - corners_b[0])
-            const py_b = (our_y - corners_b[1]) / (corners_b[3] - corners_b[1])
+         fill_grid(cx2, cy, box_size, b_width+1, b_height+1, function(x, y, xx, yy) {
+            if (x < b_width && y < b_height) {
+               const our_x = xx + box_size/2
+               const our_y = yy + box_size/2
+               const px_b = (our_x - corners_b[0]) / (corners_b[2] - corners_b[0])
+               const py_b = (our_y - corners_b[1]) / (corners_b[3] - corners_b[1])
 
-            const their_x = corners_a[0] + px_b * (corners_a[2] - corners_a[0])
-            const their_y = corners_a[1] + py_b * (corners_a[3] - corners_a[1])
-            const c = create_circle(svg, their_x, their_y, point_size, null, 'color-b')
-            c.setAttribute("style", HIDDEN_STYLE)
-
-            var x1 = Math.floor(px_b * (a_width  - 1))
-            var x2 = Math.ceil (px_b * (a_width  - 1))
-            var y1 = Math.floor(py_b * (a_height - 1))
-            var y2 = Math.ceil (py_b * (a_height - 1))
-
-            if (x1 == x2) {
-               if (x1 == 0) x2 = 1
-               else x1 = x2 - 1
-            }
-            if (y1 == y2) {
-               if (y1 == 0) y2 = 1
-               else y1 = y2 - 1
-            }
-
-            const overlap_squares = [
-               rects_a[y1][x1],
-               rects_a[y1][x2],
-               rects_a[y2][x1],
-               rects_a[y2][x2],
-            ]
-
-            rects_b[y][x].onmouseenter = function() {
-               rects_b[y][x].setAttribute("style", ACTIVE_STYLE)
-               overlap_squares.forEach(function(s) {
-                  s.setAttribute("style", ACTIVE_STYLE)
-               })
-               vert_line1.setAttribute("style", FULL_STYLE)
-               vert_line1.setAttribute("x1", pos_a[y1][x1][0])
-               vert_line1.setAttribute("x2", pos_a[y1][x1][0])
-               vert_line1.setAttribute("y1", pos_a[y1][x1][1])
-               vert_line1.setAttribute("y2", pos_a[y2][x1][1])
-
-               vert_line2.setAttribute("style", FULL_STYLE)
-               vert_line2.setAttribute("x1", pos_a[y1][x2][0])
-               vert_line2.setAttribute("x2", pos_a[y1][x2][0])
-               vert_line2.setAttribute("y1", pos_a[y1][x2][1])
-               vert_line2.setAttribute("y2", pos_a[y2][x2][1])
-
-               horz_line.setAttribute("style", FULL_STYLE)
-               horz_line.setAttribute("x1", pos_a[y1][x1][0])
-               horz_line.setAttribute("x2", pos_a[y1][x2][0])
-               horz_line.setAttribute("y1", their_y)
-               horz_line.setAttribute("y2", their_y)
-
-               c.setAttribute("style", FULL_STYLE)
-            }
-            rects_b[y][x].onmouseleave = function() {
-               rects_b[y][x].setAttribute("style", INACTIVE_STYLE)
-               overlap_squares.forEach(function(s) {
-                  s.setAttribute("style", INACTIVE_STYLE)
-               })
-               vert_line1.setAttribute("style", HIDDEN_STYLE)
-               vert_line2.setAttribute("style", HIDDEN_STYLE)
-               horz_line .setAttribute("style", HIDDEN_STYLE)
-
+               const their_x = corners_a[0] + px_b * (corners_a[2] - corners_a[0])
+               const their_y = corners_a[1] + py_b * (corners_a[3] - corners_a[1])
+               const c = create_circle(svg, their_x, their_y, point_size, null, 'color-b')
                c.setAttribute("style", HIDDEN_STYLE)
+
+               var x1 = Math.floor(px_b * (a_width  - 1))
+               var x2 = Math.ceil (px_b * (a_width  - 1))
+               var y1 = Math.floor(py_b * (a_height - 1))
+               var y2 = Math.ceil (py_b * (a_height - 1))
+
+               if (x1 == x2) {
+                  if (x1 == 0) x2 = 1
+                  else x1 = x2 - 1
+               }
+               if (y1 == y2) {
+                  if (y1 == 0) y2 = 1
+                  else y1 = y2 - 1
+               }
+
+               const overlap_squares = [
+                  rects_a[y1][x1],
+                  rects_a[y1][x2],
+                  rects_a[y2][x1],
+                  rects_a[y2][x2],
+               ]
+
+               rects_b[y][x].onmouseenter = function() {
+                  rects_b[y][x].setAttribute("style", ACTIVE_STYLE)
+                  overlap_squares.forEach(function(s) {
+                     s.setAttribute("style", ACTIVE_STYLE)
+                  })
+                  vert_line1.setAttribute("style", FULL_STYLE)
+                  vert_line1.setAttribute("x1", pos_a[y1][x1][0])
+                  vert_line1.setAttribute("x2", pos_a[y1][x1][0])
+                  vert_line1.setAttribute("y1", pos_a[y1][x1][1])
+                  vert_line1.setAttribute("y2", pos_a[y2][x1][1])
+
+                  vert_line2.setAttribute("style", FULL_STYLE)
+                  vert_line2.setAttribute("x1", pos_a[y1][x2][0])
+                  vert_line2.setAttribute("x2", pos_a[y1][x2][0])
+                  vert_line2.setAttribute("y1", pos_a[y1][x2][1])
+                  vert_line2.setAttribute("y2", pos_a[y2][x2][1])
+
+                  horz_line.setAttribute("style", FULL_STYLE)
+                  horz_line.setAttribute("x1", pos_a[y1][x1][0])
+                  horz_line.setAttribute("x2", pos_a[y1][x2][0])
+                  horz_line.setAttribute("y1", their_y)
+                  horz_line.setAttribute("y2", their_y)
+
+                  c.setAttribute("style", FULL_STYLE)
+               }
+               rects_b[y][x].onmouseleave = function() {
+                  rects_b[y][x].setAttribute("style", INACTIVE_STYLE)
+                  overlap_squares.forEach(function(s) {
+                     s.setAttribute("style", INACTIVE_STYLE)
+                  })
+                  vert_line1.setAttribute("style", HIDDEN_STYLE)
+                  vert_line2.setAttribute("style", HIDDEN_STYLE)
+                  horz_line .setAttribute("style", HIDDEN_STYLE)
+
+                  c.setAttribute("style", HIDDEN_STYLE)
+               }
             }
          })
 
