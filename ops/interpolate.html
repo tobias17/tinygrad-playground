@@ -332,6 +332,7 @@
                create_line(svg, e1[0], e2[0], e1[1], e2[1], 'red', stroke_width)
             }
          })
+         const toggle_items = [vert_line1, vert_line2, horz_line, horz_hone_a, vert_hone_a, horz_hone_b, vert_hone_b]
          fill_grid(cx2, cy, box_size, b_width+1, b_height+1, function(x, y, xx, yy) {
             if (x < b_width && y < b_height) {
                const our_x = xx + box_size/2
@@ -367,53 +368,26 @@
 
                rects_b[y][x].onmouseenter = function() {
                   rects_b[y][x].setAttribute("style", ACTIVE_STYLE)
-                  overlap_squares.forEach(function(s) {
-                     s.setAttribute("style", ACTIVE_STYLE)
-                  })
-                  vert_line1.setAttribute("style", FULL_STYLE)
-                  vert_line1.setAttribute("x1", pos_a[y1][x1][0])
-                  vert_line1.setAttribute("x2", pos_a[y1][x1][0])
-                  vert_line1.setAttribute("y1", pos_a[y1][x1][1])
-                  vert_line1.setAttribute("y2", pos_a[y2][x1][1])
+                  overlap_squares.forEach(function(s) { s.setAttribute("style", ACTIVE_STYLE) })
 
-                  vert_line2.setAttribute("style", FULL_STYLE)
-                  vert_line2.setAttribute("x1", pos_a[y1][x2][0])
-                  vert_line2.setAttribute("x2", pos_a[y1][x2][0])
-                  vert_line2.setAttribute("y1", pos_a[y1][x2][1])
-                  vert_line2.setAttribute("y2", pos_a[y2][x2][1])
+                  toggle_items.forEach(function(item) { item.setAttribute("style", FULL_STYLE) })
+                  c.setAttribute("style", FULL_STYLE)
 
-                  horz_line.setAttribute("style", FULL_STYLE)
-                  horz_line.setAttribute("x1", pos_a[y1][x1][0])
-                  horz_line.setAttribute("x2", pos_a[y1][x2][0])
-                  horz_line.setAttribute("y1", their_y)
-                  horz_line.setAttribute("y2", their_y)
-
-                  horz_hone_a.setAttribute("style", FULL_STYLE)
-                  vert_hone_a.setAttribute("style", FULL_STYLE)
+                  setXYAttrs(horz_line, pos_a[y1][x1][0], pos_a[y1][x1][0], pos_a[y1][x1][1], pos_a[y2][x1][1])
+                  setXYAttrs(horz_line, pos_a[y1][x2][0], pos_a[y1][x2][0], pos_a[y1][x2][1], pos_a[y2][x2][1])
+                  setXYAttrs(horz_line, pos_a[y1][x1][0], pos_a[y1][x2][0], their_y, their_y)
                   setXYAttrs(horz_hone_a, their_x, pos_a[0][a_width][0], their_y, their_y)
                   setXYAttrs(vert_hone_a, their_x, their_x, their_y, pos_a[a_height][0][1])
-
-                  horz_hone_b.setAttribute("style", FULL_STYLE)
-                  vert_hone_b.setAttribute("style", FULL_STYLE)
                   setXYAttrs(horz_hone_b, our_x, pos_b[0][b_width][0], our_y, our_y)
                   setXYAttrs(vert_hone_b, our_x, our_x, our_y, pos_b[b_height][0][1])
-
-                  c.setAttribute("style", FULL_STYLE)
                }
                rects_b[y][x].onmouseleave = function() {
                   rects_b[y][x].setAttribute("style", INACTIVE_STYLE)
                   overlap_squares.forEach(function(s) {
                      s.setAttribute("style", INACTIVE_STYLE)
                   })
-                  vert_line1.setAttribute("style", HIDDEN_STYLE)
-                  vert_line2.setAttribute("style", HIDDEN_STYLE)
-                  horz_line .setAttribute("style", HIDDEN_STYLE)
 
-                  horz_hone_b.setAttribute("style", HIDDEN_STYLE)
-                  vert_hone_b.setAttribute("style", HIDDEN_STYLE)
-                  horz_hone_a.setAttribute("style", HIDDEN_STYLE)
-                  vert_hone_a.setAttribute("style", HIDDEN_STYLE)
-
+                  toggle_items.forEach(function(item) { item.setAttribute("style", HIDDEN_STYLE) })
                   c.setAttribute("style", HIDDEN_STYLE)
                }
             }
