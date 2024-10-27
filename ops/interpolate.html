@@ -176,6 +176,13 @@
          return rect
       }
 
+      function setXYAttrs(obj, x1, x2, y1, y2) {
+         obj.setAttribute("x1", x1)
+         obj.setAttribute("x2", x2)
+         obj.setAttribute("y1", y1)
+         obj.setAttribute("y2", y2)
+      }
+
       function create_grid(svg, cx, cy, box_size, width, height, stroke_width, inlets=[0,0,0,0]) {
          const box_scale_x = width  * box_size
          const box_scale_y = height * box_size
@@ -275,6 +282,11 @@
          const vert_line2 = create_line(svg, 0, 0, 0, 0, 'black', stroke_width*2, HIDDEN_STYLE)
          const horz_line  = create_line(svg, 0, 0, 0, 0, 'black', stroke_width*2, HIDDEN_STYLE)
 
+         const vert_hone = create_line(svg, 0, 0, 0, 0, 'red', stroke_width, HIDDEN_STYLE)
+         const horz_hone = create_line(svg, 0, 0, 0, 0, 'red', stroke_width, HIDDEN_STYLE)
+         vert_hone.setAttribute('pointer-events', 'none')
+         horz_hone.setAttribute('pointer-events', 'none')
+
          const corners_a = [WRITE_SECTION_SIZE*3, WRITE_SECTION_SIZE*3, 0, 0]
          const corners_b = [WRITE_SECTION_SIZE*3, WRITE_SECTION_SIZE*3, 0, 0]
          fill_grid(cx1, cy, box_size, a_width+1, a_height+1, function(x, y, xx, yy) {
@@ -372,6 +384,11 @@
                   horz_line.setAttribute("y1", their_y)
                   horz_line.setAttribute("y2", their_y)
 
+                  horz_hone.setAttribute("style", FULL_STYLE)
+                  vert_hone.setAttribute("style", FULL_STYLE)
+                  setXYAttrs(horz_hone, our_x, pos_b[0][b_width][0], our_y, our_y)
+                  setXYAttrs(vert_hone, our_x, our_x, our_y, pos_b[b_height][0][1])
+
                   c.setAttribute("style", FULL_STYLE)
                }
                rects_b[y][x].onmouseleave = function() {
@@ -382,6 +399,9 @@
                   vert_line1.setAttribute("style", HIDDEN_STYLE)
                   vert_line2.setAttribute("style", HIDDEN_STYLE)
                   horz_line .setAttribute("style", HIDDEN_STYLE)
+
+                  horz_hone.setAttribute("style", HIDDEN_STYLE)
+                  vert_hone.setAttribute("style", HIDDEN_STYLE)
 
                   c.setAttribute("style", HIDDEN_STYLE)
                }
