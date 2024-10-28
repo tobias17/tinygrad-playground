@@ -57,10 +57,10 @@
          fill: #2398FF;
       }
       .color-b {
-         fill: #FF9B34;
+         fill: #378A5A;
       }
       .color-c {
-         fill: #378A5A;
+         fill: #FF9B34;
       }
       button {
          margin: 0 5px;
@@ -131,6 +131,8 @@
       const INACTIVE_STYLE = "opacity:0.2;"
       const ACTIVE_STYLE   = "opacity:0.4;"
       const FULL_STYLE     = "opacity:1.0;"
+
+      const HONE_COLOR = '#FF9B34'
 
       function change_value(id, delta) {
          const label = document.getElementById(id)
@@ -278,10 +280,10 @@
          create_grid(svg, cx1, cy, box_size, a_width+1, a_height+1, stroke_width, [0,1,0,1])
          create_grid(svg, cx2, cy, box_size, b_width+1, b_height+1, stroke_width, [0,1,0,1])
 
-         const vert_hone_a = create_line(svg, 0, 0, 0, 0, 'red', stroke_width, HIDDEN_STYLE)
-         const horz_hone_a = create_line(svg, 0, 0, 0, 0, 'red', stroke_width, HIDDEN_STYLE)
-         const vert_hone_b = create_line(svg, 0, 0, 0, 0, 'red', stroke_width, HIDDEN_STYLE)
-         const horz_hone_b = create_line(svg, 0, 0, 0, 0, 'red', stroke_width, HIDDEN_STYLE)
+         const vert_hone_a = create_line(svg, 0, 0, 0, 0, HONE_COLOR, stroke_width, HIDDEN_STYLE)
+         const horz_hone_a = create_line(svg, 0, 0, 0, 0, HONE_COLOR, stroke_width, HIDDEN_STYLE)
+         const vert_hone_b = create_line(svg, 0, 0, 0, 0, HONE_COLOR, stroke_width, HIDDEN_STYLE)
+         const horz_hone_b = create_line(svg, 0, 0, 0, 0, HONE_COLOR, stroke_width, HIDDEN_STYLE)
          vert_hone_a.setAttribute('pointer-events', 'none')
          horz_hone_a.setAttribute('pointer-events', 'none')
          vert_hone_b.setAttribute('pointer-events', 'none')
@@ -327,9 +329,9 @@
             for (let vert = 0; vert < 2; vert++) {
                const e1 = vert == 0 ? pos_z[z_height][0]         : pos_z[0][z_width]
                const e2 = vert == 0 ? pos_z[z_height][z_width-1] : pos_z[z_height-1][z_width]
-               create_circle(svg, e1[0], e1[1], point_size*0.6, 'red')
-               create_circle(svg, e2[0], e2[1], point_size*0.6, 'red')
-               create_line(svg, e1[0], e2[0], e1[1], e2[1], 'red', stroke_width)
+               create_circle(svg, e1[0], e1[1], point_size*0.6, HONE_COLOR)
+               create_circle(svg, e2[0], e2[1], point_size*0.6, HONE_COLOR)
+               create_line(svg, e1[0], e2[0], e1[1], e2[1], HONE_COLOR, stroke_width)
             }
          })
          const toggle_items = [vert_line1, vert_line2, horz_line, horz_hone_a, vert_hone_a, horz_hone_b, vert_hone_b]
