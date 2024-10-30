@@ -339,6 +339,8 @@
                }
             }
          })
+         var hover_x = -1
+         var hover_y = -1
          const toggle_items = [vert_line1, vert_line2, horz_line, horz_hone_a, vert_hone_a, horz_hone_b, vert_hone_b]
          fill_grid(cx2, cy, box_size, b_width+1, b_height+1, function(x, y, xx, yy) {
             if (x < b_width && y < b_height) {
@@ -387,15 +389,20 @@
                   setXYAttrs(vert_hone_a, their_x, their_x, their_y, pos_a[a_height][0][1])
                   setXYAttrs(horz_hone_b, our_x, pos_b[0][b_width][0], our_y, our_y)
                   setXYAttrs(vert_hone_b, our_x, our_x, our_y, pos_b[b_height][0][1])
+
+                  hover_x = x
+                  hover_y = y
                }
                rects_b[y][x].onmouseleave = function() {
-                  rects_b[y][x].setAttribute("style", INACTIVE_STYLE)
-                  overlap_squares.forEach(function(s) {
-                     s.setAttribute("style", INACTIVE_STYLE)
-                  })
+                  if (hover_x == x && hover_y == y) {
+                     rects_b[y][x].setAttribute("style", INACTIVE_STYLE)
+                     overlap_squares.forEach(function(s) {
+                        s.setAttribute("style", INACTIVE_STYLE)
+                     })
 
-                  toggle_items.forEach(function(item) { item.setAttribute("style", HIDDEN_STYLE) })
-                  c.setAttribute("style", HIDDEN_STYLE)
+                     toggle_items.forEach(function(item) { item.setAttribute("style", HIDDEN_STYLE) })
+                     c.setAttribute("style", HIDDEN_STYLE)
+                  }
                }
             }
          })
