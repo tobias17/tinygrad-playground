@@ -329,9 +329,14 @@
             for (let vert = 0; vert < 2; vert++) {
                const e1 = vert == 0 ? pos_z[z_height][0]         : pos_z[0][z_width]
                const e2 = vert == 0 ? pos_z[z_height][z_width-1] : pos_z[z_height-1][z_width]
-               create_circle(svg, e1[0], e1[1], point_size*0.6, HONE_COLOR)
-               create_circle(svg, e2[0], e2[1], point_size*0.6, HONE_COLOR)
                create_line(svg, e1[0], e2[0], e1[1], e2[1], HONE_COLOR, stroke_width)
+
+               const b_size = vert == 0 ? b_width : b_height
+               for (let i = 0; i < b_size; i++) {
+                  const p_x = e1[0] + (i / (b_size-1)) * (e2[0] - e1[0])
+                  const p_y = e1[1] + (i / (b_size-1)) * (e2[1] - e1[1])
+                  create_circle(svg, p_x, p_y, point_size, HONE_COLOR)
+               }
             }
          })
          const toggle_items = [vert_line1, vert_line2, horz_line, horz_hone_a, vert_hone_a, horz_hone_b, vert_hone_b]
