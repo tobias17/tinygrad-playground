@@ -1,361 +1,391 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-   <meta charset="UTF-8">
-   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-   <title>Gather</title>
-   <style>
-      body {
-         font-family: Arial, sans-serif;
-      }
-      .grid-template {
-         display: grid;
-         grid-template-columns: repeat(3, auto);
-         gap: 20px;
-         margin-top: 20px;
-         margin: 0 auto;
-      }
-      .shape-container {
-         border: 1px solid #ccc;
-         padding: 10px;
-         border-radius: 5px;
-         background-color: #f9f9f9;
-         display: flex;
-         flex-direction: column;
-         align-items: center;
-      }
-      .label {
-         font-weight: bold;
-         margin-bottom: 5px;
-         text-align: center;
-      }
-      .gap {
-         margin-left: 20px;
-      }
-      .input-pair {
-         display: flex;
-         align-items: center;
-         justify-content: center;
-         margin-bottom: 10px;
-      }
-      .number-label {
-         width: 50px;
-         text-align: center;
-         border: 1px solid #ccc;
-         padding: 5px;
-         user-select: none;
-         background-color: #fff;
-         margin: 0 5px;
-      }
-      .svg-box {
-         width: 100%;
-         height: auto;
-         aspect-ratio: 3 / 1;
-         margin-top: 10px;
-      }
-      .color-a {
-         fill: #2398FF;
-      }
-      .color-b {
-         fill: #378A5A;
-      }
-      .color-c {
-         fill: #FF9B34;
-      }
-      button {
-         margin: 0 5px;
-      }
-      h2 {
-         margin: 0 0 10px 0;
-         text-align: center;
-      }
-      svg {
-         border: 1px solid #ccc;
-         border-radius: 5px;
-      }
-   </style>
-</head>
-<body>
-   <h1>Gather</h1>
-   
-   <div class="grid-template">
-      <div class="shape-container">
-         <h2>Shape A</h2>
-         <div class="input-pair">
-            <span class="label">Width:</span>
-            <button onclick="change_value('width_a', -1)">-</button>
-            <span id="width_a" class="number-label">4</span>
-            <button onclick="change_value('width_a', 1)">+</button>
+   <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Gather</title>
+      <style>
+         body {
+            font-family: Arial, sans-serif;
+         }
+         .grid-template {
+            display: grid;
+            grid-template-columns: repeat(3, auto);
+            gap: 20px;
+            margin-top: 20px;
+            margin: 0 auto;
+         }
+         .shape-container {
+            border: 1px solid #ccc;
+            padding: 10px;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+         }
+         .label {
+            font-weight: bold;
+            margin-bottom: 5px;
+            text-align: center;
+         }
+         .gap {
+            margin-left: 20px;
+         }
+         .input-pair {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 10px;
+         }
+         .number-label {
+            width: 50px;
+            text-align: center;
+            border: 1px solid #ccc;
+            padding: 5px;
+            user-select: none;
+            background-color: #fff;
+            margin: 0 5px;
+         }
+         .svg-box {
+            width: 100%;
+            height: auto;
+            aspect-ratio: 3 / 1;
+            margin-top: 10px;
+         }
+         .color-a {
+            fill: #2398FF;
+         }
+         .color-b {
+            fill: #378A5A;
+         }
+         .color-c {
+            fill: #FF9B34;
+         }
+         button {
+            margin: 0 5px;
+         }
+         h2 {
+            margin: 0 0 10px 0;
+            text-align: center;
+         }
+         svg {
+            border: 1px solid #ccc;
+            border-radius: 5px;
+         }
+      </style>
+   </head>
+   <body>
+      <h1>Gather</h1>
+      
+      <div class="grid-template">
+         <div class="shape-container">
+            <h2>Shape A</h2>
+            <div class="input-pair">
+               <span class="label">Width:</span>
+               <button onclick="change_value('width_a', -1)">-</button>
+               <span id="width_a" class="number-label">4</span>
+               <button onclick="change_value('width_a', 1)">+</button>
+            </div>
+            <div class="input-pair">
+               <span class="label">Height:</span>
+               <button onclick="change_value('height_a', -1)">-</button>
+               <span id="height_a" class="number-label">5</span>
+               <button onclick="change_value('height_a', 1)">+</button>
+            </div>
          </div>
-         <div class="input-pair">
-            <span class="label">Height:</span>
-            <button onclick="change_value('height_a', -1)">-</button>
-            <span id="height_a" class="number-label">5</span>
-            <button onclick="change_value('height_a', 1)">+</button>
+
+         <div class="shape-container">
+            <h2>Shape B</h2>
+            <div class="input-pair">
+               <span class="label">Width:</span>
+               <button onclick="change_value('width_b', -1)">-</button>
+               <span id="width_b" class="number-label">6</span>
+               <button onclick="change_value('width_b', 1)">+</button>
+            </div>
+            <div class="input-pair">
+               <span class="label">Height:</span>
+               <button onclick="change_value('height_b', -1)">-</button>
+               <span id="height_b" class="number-label">5</span>
+               <button onclick="change_value('height_b', 1)">+</button>
+            </div>
+         </div>
+
+         <div class="shape-container">
+            <h2>Options</h2>
+            <div class="input-pair">
+               <span class="label">Dim:</span>
+               <input type="radio" id="dim-width" name="dim" value="0" onchange="update()" checked/>
+               <span>Width</span>
+               <input type="radio" id="dim-height" name="dim" value="1" onchange="update()"/>
+               <span>Height</span>
+            </div>
+            <div class="input-pair" id="slider-container">
+               <span class="label">Index:</span>
+               <input type="range" id="index-slider" min="0" max="9" step="1" value="1" disabled="true"/>
+               <span id="instruct-label">Click on output square</span>
+            </div>
          </div>
       </div>
 
-      <div class="shape-container">
-         <h2>Shape B</h2>
-         <div class="input-pair">
-            <span class="label">Width:</span>
-            <button onclick="change_value('width_b', -1)">-</button>
-            <span id="width_b" class="number-label">6</span>
-            <button onclick="change_value('width_b', 1)">+</button>
-         </div>
-         <div class="input-pair">
-            <span class="label">Height:</span>
-            <button onclick="change_value('height_b', -1)">-</button>
-            <span id="height_b" class="number-label">5</span>
-            <button onclick="change_value('height_b', 1)">+</button>
-         </div>
+      <div class="flexbox">
+         <svg id="svg" class="svg-box" viewBox="0 0 300 100" xmlns="http://www.w3.org/2000/svg">
+         </svg>
       </div>
 
-      <div class="shape-container">
-         <h2>Options</h2>
-         <div class="input-pair">
-            <span class="label">Dim:</span>
-            <input type="radio" id="dim-width" name="dim" value="0" onchange="update()" checked/>
-            <span>Width</span>
-            <input type="radio" id="dim-height" name="dim" value="1" onchange="update()"/>
-            <span>Height</span>
-         </div>
-         <div class="input-pair" id="slider-container">
-            <span class="label">Click on Output Square</span>
-         </div>
+      <div>
+         <a id="error-label" style="color:red; padding:8px;"></a>
       </div>
-   </div>
 
-   <div class="flexbox">
-      <svg id="svg" class="svg-box" viewBox="0 0 300 100" xmlns="http://www.w3.org/2000/svg">
-      </svg>
-   </div>
+      <script>
+         // constants
+         const FULL_SECTION_SIZE = 100
+         const SECTION_BUFFER = 5
+         const WRITE_SECTION_SIZE = FULL_SECTION_SIZE - (SECTION_BUFFER * 2)
 
-   <div>
-      <a id="error-label" style="color:red; padding:8px;"></a>
-   </div>
+         const HIDDEN_STYLE   = "opacity:0.0;"
+         const INACTIVE_STYLE = "opacity:0.2;"
+         const ACTIVE_STYLE   = "opacity:0.4;"
+         const FULL_STYLE     = "opacity:1.0;"
 
-   <script>
-      // constants
-      const FULL_SECTION_SIZE = 100
-      const SECTION_BUFFER = 5
-      const WRITE_SECTION_SIZE = FULL_SECTION_SIZE - (SECTION_BUFFER * 2)
+         const HONE_COLOR = '#FF9B34'
 
-      const HIDDEN_STYLE   = "opacity:0.0;"
-      const INACTIVE_STYLE = "opacity:0.2;"
-      const ACTIVE_STYLE   = "opacity:0.4;"
-      const FULL_STYLE     = "opacity:1.0;"
-
-      const HONE_COLOR = '#FF9B34'
-
-      function change_value(id, delta) {
-         const label = document.getElementById(id)
-         let currentValue = parseInt(label.textContent)
-         let newValue = Math.max(1, Math.min(10, currentValue + delta))
-         label.textContent = newValue
-         update()
-      }
-
-      function create_line(svg, x1, x2, y1, y2, color, width, class_=null) {
-         const line = document.createElementNS('http://www.w3.org/2000/svg', 'line')
-         line.setAttribute('x1', x1)
-         line.setAttribute('x2', x2)
-         line.setAttribute('y1', y1)
-         line.setAttribute('y2', y2)
-         line.setAttribute('stroke', color)
-         line.setAttribute('stroke-width', width)
-         if (class_ != null) line.setAttribute('class', class_)
-         svg.appendChild(line)
-         return line
-      }
-
-      function create_circle(svg, cx, cy, r, color=null, class_=null) {
-         const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle')
-         circle.setAttribute('cx', cx)
-         circle.setAttribute('cy', cy)
-         circle.setAttribute('r', r)
-         if (color  != null) circle.setAttribute('fill', color)
-         if (class_ != null) circle.setAttribute('class', class_)
-         svg.appendChild(circle)
-         return circle
-      }
-
-      function create_rect(svg, x, y, w, h, class_, style) {
-         const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect')
-         rect.setAttribute('x', x)
-         rect.setAttribute('y', y)
-         rect.setAttribute('width', w)
-         rect.setAttribute('height', h)
-         rect.setAttribute('class', class_)
-         rect.setAttribute('style', style)
-         svg.appendChild(rect)
-         return rect
-      }
-
-      function create_text(svg, content, x, y, color, font_size=null) {
-         const text = document.createElementNS('http://www.w3.org/2000/svg', 'text')
-         text.setAttribute('x', x)
-         text.setAttribute('y', y)
-         text.setAttribute('fill', color)
-         text.setAttribute('text-anchor', "middle")
-         text.setAttribute('dominant-baseline', "middle")
-         if (font_size != null) text.setAttribute("font-size", font_size)
-         text.innerHTML = content
-         svg.appendChild(text)
-         return text
-      }
-
-      function setXYAttrs(obj, x1, x2, y1, y2) {
-         obj.setAttribute("x1", x1)
-         obj.setAttribute("x2", x2)
-         obj.setAttribute("y1", y1)
-         obj.setAttribute("y2", y2)
-      }
-
-      function create_grid(svg, cx, cy, box_size, width, height, stroke_width, inlets=[0,0,0,0]) {
-         const box_scale_x = width  * box_size
-         const box_scale_y = height * box_size
-         const upper_y = cy + -0.5 * box_scale_y - stroke_width/2 + inlets[2]*box_size
-         const lower_y = cy +  0.5 * box_scale_y + stroke_width/2 - inlets[3]*box_size
-         const upper_x = cx + -0.5 * box_scale_x - stroke_width/2 + inlets[0]*box_size
-         const lower_x = cx +  0.5 * box_scale_x + stroke_width/2 - inlets[1]*box_size
-
-         for (let x = 0 + inlets[0]; x < width + 1 - inlets[1]; x++) {
-            const xx = cx + ((x / width) - 0.5) * box_scale_x
-            create_line(svg, xx, xx, upper_y, lower_y, 'black', stroke_width)
+         function change_value(id, delta) {
+            const label = document.getElementById(id)
+            let currentValue = parseInt(label.textContent)
+            let newValue = Math.max(1, Math.min(10, currentValue + delta))
+            label.textContent = newValue
+            update()
          }
 
-         for (let y = 0 + inlets[2]; y < height + 1 - inlets[3]; y++) {
-            const yy = cy + ((y / height) - 0.5) * box_scale_y
-            create_line(svg, upper_x, lower_x, yy, yy, 'black', stroke_width)
+         function create_line(svg, x1, x2, y1, y2, color, width, class_=null) {
+            const line = document.createElementNS('http://www.w3.org/2000/svg', 'line')
+            line.setAttribute('x1', x1)
+            line.setAttribute('x2', x2)
+            line.setAttribute('y1', y1)
+            line.setAttribute('y2', y2)
+            line.setAttribute('stroke', color)
+            line.setAttribute('stroke-width', width)
+            if (class_ != null) line.setAttribute('class', class_)
+            svg.appendChild(line)
+            return line
          }
-      }
 
-      function fill_grid(cx, cy, box_size, width, height, fnx) {
-         const box_scale_x = width  * box_size
-         const box_scale_y = height * box_size
-         const upper_y = cy + -0.5 * box_scale_y
-         const upper_x = cx + -0.5 * box_scale_x
+         function create_circle(svg, cx, cy, r, color=null, class_=null) {
+            const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle')
+            circle.setAttribute('cx', cx)
+            circle.setAttribute('cy', cy)
+            circle.setAttribute('r', r)
+            if (color  != null) circle.setAttribute('fill', color)
+            if (class_ != null) circle.setAttribute('class', class_)
+            svg.appendChild(circle)
+            return circle
+         }
 
-         for (let y = 0; y < height; y++) {
-            for (let x = 0; x < width; x++) {
-               fnx(x, y, upper_x + box_size * x, upper_y + box_size * y)
+         function create_rect(svg, x, y, w, h, class_, style) {
+            const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect')
+            rect.setAttribute('x', x)
+            rect.setAttribute('y', y)
+            rect.setAttribute('width', w)
+            rect.setAttribute('height', h)
+            rect.setAttribute('class', class_)
+            rect.setAttribute('style', style)
+            svg.appendChild(rect)
+            return rect
+         }
+
+         function create_text(svg, content, x, y, color, font_size=null) {
+            const text = document.createElementNS('http://www.w3.org/2000/svg', 'text')
+            text.setAttribute('x', x)
+            text.setAttribute('y', y)
+            text.setAttribute('fill', color)
+            text.setAttribute('text-anchor', "middle")
+            text.setAttribute('dominant-baseline', "middle")
+            if (font_size != null) text.setAttribute("font-size", font_size)
+            text.innerHTML = content
+            svg.appendChild(text)
+            return text
+         }
+
+         function setXYAttrs(obj, x1, x2, y1, y2) {
+            obj.setAttribute("x1", x1)
+            obj.setAttribute("x2", x2)
+            obj.setAttribute("y1", y1)
+            obj.setAttribute("y2", y2)
+         }
+
+         function create_grid(svg, cx, cy, box_size, width, height, stroke_width, inlets=[0,0,0,0]) {
+            const box_scale_x = width  * box_size
+            const box_scale_y = height * box_size
+            const upper_y = cy + -0.5 * box_scale_y - stroke_width/2 + inlets[2]*box_size
+            const lower_y = cy +  0.5 * box_scale_y + stroke_width/2 - inlets[3]*box_size
+            const upper_x = cx + -0.5 * box_scale_x - stroke_width/2 + inlets[0]*box_size
+            const lower_x = cx +  0.5 * box_scale_x + stroke_width/2 - inlets[1]*box_size
+
+            for (let x = 0 + inlets[0]; x < width + 1 - inlets[1]; x++) {
+               const xx = cx + ((x / width) - 0.5) * box_scale_x
+               create_line(svg, xx, xx, upper_y, lower_y, 'black', stroke_width)
+            }
+
+            for (let y = 0 + inlets[2]; y < height + 1 - inlets[3]; y++) {
+               const yy = cy + ((y / height) - 0.5) * box_scale_y
+               create_line(svg, upper_x, lower_x, yy, yy, 'black', stroke_width)
             }
          }
-      }
 
-      function update() {
-         const error_label    = document.getElementById("error-label")
-         const c_width_label  = document.getElementById("c_width")
-         const c_height_label = document.getElementById("c_height")
-         
-         // grab width and height
-         const width_a  = parseInt(document.getElementById("width_a").textContent)
-         const height_a = parseInt(document.getElementById("height_a").textContent)
-         const width_b  = parseInt(document.getElementById("width_b").textContent)
-         const height_b = parseInt(document.getElementById("height_b").textContent)
+         function fill_grid(cx, cy, box_size, width, height, fnx) {
+            const box_scale_x = width  * box_size
+            const box_scale_y = height * box_size
+            const upper_y = cy + -0.5 * box_scale_y
+            const upper_x = cx + -0.5 * box_scale_x
 
-         // clear svg
-         const svg = document.getElementById("svg")
-         while (true) {
-            const child = svg.lastElementChild
-            if (!child) {
-               break
+            for (let y = 0; y < height; y++) {
+               for (let x = 0; x < width; x++) {
+                  fnx(x, y, upper_x + box_size * x, upper_y + box_size * y)
+               }
             }
-            svg.removeChild(child)
-         }
-         create_circle(svg, 0, 0, 1000, '#f9f9f9')
-
-         // compute shapes and add
-         const max_shape_size = Math.max(width_a, height_a, width_b, height_b)
-         const box_size       = WRITE_SECTION_SIZE / (max_shape_size + 1)
-         const stroke_width   = WRITE_SECTION_SIZE / max_shape_size * 0.03
-         const point_size     = box_size * 0.1
-
-         const cy =  FULL_SECTION_SIZE * 0.5
-         const cx1 = FULL_SECTION_SIZE * 1.0
-         const cx2 = FULL_SECTION_SIZE * 2.0
-         
-         const rects_a  = []
-         const points_a = []
-         for (let i = 0; i < height_a; i++) {
-            rects_a .push([])
-            points_a.push([])
-         }
-         const rects_b  = []
-         const points_b = []
-         for (let i = 0; i < height_b; i++) {
-            rects_b .push([])
-            points_b.push([])
          }
 
-         fill_grid(cx1, cy, box_size, width_a, height_a, function(x, y, xx, yy) {
-            if (x < width_a && y < height_a) {
-               rects_a[y].push(create_rect(svg, xx, yy, box_size, box_size, 'color-a', INACTIVE_STYLE))
+         function update() {
+            const error_label    = document.getElementById("error-label")
+            const index_slider   = document.getElementById("index-slider")
+            const instruct_label = document.getElementById("instruct-label")
+            const c_width_label  = document.getElementById("c_width")
+            const c_height_label = document.getElementById("c_height")
+            
+            // grab width and height
+            const width_a  = parseInt(document.getElementById("width_a").textContent)
+            const height_a = parseInt(document.getElementById("height_a").textContent)
+            const width_b  = parseInt(document.getElementById("width_b").textContent)
+            const height_b = parseInt(document.getElementById("height_b").textContent)
+
+            // clear svg
+            index_slider.oninput = null
+            index_slider.disabled = true
+            const svg = document.getElementById("svg")
+            while (true) {
+               const child = svg.lastElementChild
+               if (!child) {
+                  break
+               }
+               svg.removeChild(child)
             }
-         })
-         fill_grid(cx2, cy, box_size, width_b, height_b, function(x, y, xx, yy) {
-            if (x < width_b && y < height_b) {
-               rects_b[y].push(create_rect(svg, xx, yy, box_size, box_size, 'color-b', INACTIVE_STYLE))
+            create_circle(svg, 0, 0, 1000, '#f9f9f9')
+
+            // compute shapes and add
+            const max_shape_size = Math.max(width_a, height_a, width_b, height_b)
+            const box_size       = WRITE_SECTION_SIZE / (max_shape_size + 1)
+            const stroke_width   = WRITE_SECTION_SIZE / max_shape_size * 0.03
+            const point_size     = box_size * 0.1
+
+            const cy =  FULL_SECTION_SIZE * 0.5
+            const cx1 = FULL_SECTION_SIZE * 1.0
+            const cx2 = FULL_SECTION_SIZE * 2.0
+            
+            const rects_a  = []
+            const points_a = []
+            for (let i = 0; i < height_a; i++) {
+               rects_a .push([])
+               points_a.push([])
             }
-         })
+            const rects_b  = []
+            const points_b = []
+            for (let i = 0; i < height_b; i++) {
+               rects_b .push([])
+               points_b.push([])
+            }
 
-         create_grid(svg, cx1, cy, box_size, width_a, height_a, stroke_width)
-         create_grid(svg, cx2, cy, box_size, width_b, height_b, stroke_width)
+            fill_grid(cx1, cy, box_size, width_a, height_a, function(x, y, xx, yy) {
+               if (x < width_a && y < height_a) {
+                  rects_a[y].push(create_rect(svg, xx, yy, box_size, box_size, 'color-a', INACTIVE_STYLE))
+               }
+            })
+            fill_grid(cx2, cy, box_size, width_b, height_b, function(x, y, xx, yy) {
+               if (x < width_b && y < height_b) {
+                  rects_b[y].push(create_rect(svg, xx, yy, box_size, box_size, 'color-b', INACTIVE_STYLE))
+               }
+            })
 
-         fill_grid(cx1, cy, box_size, width_a, height_a, function(x, y, xx, yy) {
-            const c = create_circle(svg, xx + box_size/2, yy + box_size/2, point_size, null, 'color-a')
-            c.setAttribute('pointer-events', 'none')
-            points_a[y].push(c)
-         })
-         fill_grid(cx2, cy, box_size, width_b, height_b, function(x, y, xx, yy) {
-            const center_x = xx + box_size/2
-            const center_y = yy + box_size/2
-            const c = create_circle(svg, center_x, center_y, point_size, null, 'color-b')
-            c.setAttribute('pointer-events', 'none')
-            points_b[y].push(c)
-         })
+            create_grid(svg, cx1, cy, box_size, width_a, height_a, stroke_width)
+            create_grid(svg, cx2, cy, box_size, width_b, height_b, stroke_width)
 
-         const is_dim_width = document.getElementById('dim-width').checked
-         if (is_dim_width && height_a != height_b && height_a != 1 && height_b != 1) {
-            error_label.textContent = `Heights must either match or one must be size 1 when Dim=Width, got ${height_a} != ${height_b}`
-         } else if (!is_dim_width && width_a != width_b && width_a != 1 && width_b != 1) {
-            error_label.textContent = `Widths must either match or one must be size 1 when Dim=Height, got ${width_a} != ${width_b}`
-         } else {
-            error_label.textContent = ""
-
-            var selected_x = -1
-            var selected_y = -1
-            const text = create_text(svg, "0", -1000, -1000, "black", 9)
-            text.setAttribute('pointer-events', 'none')
+            fill_grid(cx1, cy, box_size, width_a, height_a, function(x, y, xx, yy) {
+               const c = create_circle(svg, xx + box_size/2, yy + box_size/2, point_size, null, 'color-a')
+               c.setAttribute('pointer-events', 'none')
+               points_a[y].push(c)
+            })
             fill_grid(cx2, cy, box_size, width_b, height_b, function(x, y, xx, yy) {
                const center_x = xx + box_size/2
                const center_y = yy + box_size/2
-               rects_b[y][x].onclick = function() {
-                  const click_on_self = selected_x == x && selected_y == y
-                  if ((selected_x >= 0 && selected_y >= 0) || click_on_self) {
-                     points_b[selected_y][selected_x].setAttribute("style", "")
-                     rects_b [selected_y][selected_x].setAttribute("style", INACTIVE_STYLE)
-                  }
-                  if (click_on_self) {
-                     text.setAttribute("x", -1000)
-                     selected_x = -1
-                     selected_y = -1
-                     return
-                  }
-                  points_b[y][x].setAttribute("style", "visibility: hidden;")
-                  rects_b [y][x].setAttribute("style", ACTIVE_STYLE)
-                  text.setAttribute("x", center_x)
-                  text.setAttribute("y", center_y)
-                  selected_x = x
-                  selected_y = y
-               }
+               const c = create_circle(svg, center_x, center_y, point_size, null, 'color-b')
+               c.setAttribute('pointer-events', 'none')
+               points_b[y].push(c)
             })
+
+            const is_dim_width = document.getElementById('dim-width').checked
+            if (is_dim_width && height_a != height_b && height_a != 1) {
+               error_label.textContent = `Heights must either match or input must be size 1 when Dim=Width, got ${height_a} != ${height_b}`
+               instruct_label.textContent = ""
+            } else if (!is_dim_width && width_a != width_b && width_a != 1) {
+               error_label.textContent = `Widths must either match or input must be size 1 when Dim=Height, got ${width_a} != ${width_b}`
+               instruct_label.textContent = ""
+            } else {
+               instruct_label.textContent = "Click on output square"
+               error_label.textContent = ""
+               index_slider.value = 0
+               index_slider.max = (is_dim_width ? width_a : height_a) - 1
+
+               const index_label = create_text(svg, "0", -1000, -1000, "black", 9)
+               index_label.setAttribute('pointer-events', 'none')
+
+               var selected_x = -1
+               var selected_y = -1
+               var prev_x = 0
+               var prev_y = 0
+
+               function on_slider_update() {
+                  index_label.textContent = index_slider.value
+                  rects_a[prev_y][prev_x].setAttribute("style", INACTIVE_STYLE)
+                  prev_x = is_dim_width ? index_slider.value : Math.min(selected_x, width_a-1)
+                  prev_y = is_dim_width ? Math.min(selected_y, height_a-1) : index_slider.value
+                  console.log(prev_y)
+                  rects_a[prev_y][prev_x].setAttribute("style", ACTIVE_STYLE)
+               }
+               index_slider.oninput = on_slider_update
+
+               fill_grid(cx2, cy, box_size, width_b, height_b, function(x, y, xx, yy) {
+                  const center_x = xx + box_size/2
+                  const center_y = yy + box_size/2
+                  rects_b[y][x].onclick = function() {
+                     const click_on_self = selected_x == x && selected_y == y
+                     if ((selected_x >= 0 && selected_y >= 0) || click_on_self) {
+                        points_b[selected_y][selected_x].setAttribute("style", "")
+                        rects_b [selected_y][selected_x].setAttribute("style", INACTIVE_STYLE)
+                     }
+                     if (click_on_self) {
+                        index_label.setAttribute("x", -1000)
+                        selected_x = -1
+                        selected_y = -1
+                        index_slider.disabled = true
+                        instruct_label.textContent = "Click on output square"
+                        return
+                     }
+                     instruct_label.textContent = ""
+                     index_slider.disabled = false
+                     points_b[y][x].setAttribute("style", "visibility: hidden;")
+                     rects_b [y][x].setAttribute("style", ACTIVE_STYLE)
+                     index_label.setAttribute("x", center_x)
+                     index_label.setAttribute("y", center_y)
+                     selected_x = x
+                     selected_y = y
+                     on_slider_update()
+                  }
+               })
+            }
+
          }
 
-      }
-
-      update()
-   </script>
-</body>
+         update()
+      </script>
+   </body>
 </html>
