@@ -115,9 +115,9 @@
          <h2>Options</h2>
          <div class="input-pair">
             <span class="label">Dim:</span>
-            <input type="radio" id="dim-width" name="dim" value="0" checked/>
+            <input type="radio" id="dim-width" name="dim" value="0" onchange="update()" checked/>
             <span>Width</span>
-            <input type="radio" id="dim-height" name="dim" value="1"/>
+            <input type="radio" id="dim-height" name="dim" value="1" onchange="update()"/>
             <span>Height</span>
          </div>
          <div class="input-pair" id="slider-container">
@@ -308,21 +308,35 @@
             c.setAttribute('pointer-events', 'none')
             points_a[y].push(c)
          })
-         var selected_x = -1
-         var selected_y = -1
-         const text = create_text(svg, "0", -100, -100, "black", 10)
          fill_grid(cx2, cy, box_size, b_width, b_height, function(x, y, xx, yy) {
             const center_x = xx + box_size/2
             const center_y = yy + box_size/2
             const c = create_circle(svg, center_x, center_y, point_size, null, 'color-b')
             c.setAttribute('pointer-events', 'none')
             points_b[y].push(c)
+         })
 
+         var selected_x = -1
+         var selected_y = -1
+         const text = create_text(svg, "0", -1000, -1000, "black", 9)
+         text.setAttribute('pointer-events', 'none')
+         fill_grid(cx2, cy, box_size, b_width, b_height, function(x, y, xx, yy) {
+            const center_x = xx + box_size/2
+            const center_y = yy + box_size/2
             rects_b[y][x].onclick = function() {
-               if (selected_x >= 0 && selected_y >= 0) {
+               const click_on_self = selected_x == x && selected_y == y
+               if ((selected_x >= 0 && selected_y >= 0) || click_on_self) {
                   points_b[selected_y][selected_x].setAttribute("style", "")
+                  rects_b [selected_y][selected_x].setAttribute("style", INACTIVE_STYLE)
                }
-               c.setAttribute("style", "visibility: hidden;")
+               if (click_on_self) {
+                  text.setAttribute("x", -1000)
+                  selected_x = -1
+                  selected_y = -1
+                  return
+               }
+               points_b[y][x].setAttribute("style", "visibility: hidden;")
+               rects_b [y][x].setAttribute("style", ACTIVE_STYLE)
                text.setAttribute("x", center_x)
                text.setAttribute("y", center_y)
                selected_x = x
