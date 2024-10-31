@@ -83,15 +83,15 @@
          <h2>Shape A</h2>
          <div class="input-pair">
             <span class="label">Width:</span>
-            <button onclick="change_value('a_width', -1)">-</button>
-            <span id="a_width" class="number-label">4</span>
-            <button onclick="change_value('a_width', 1)">+</button>
+            <button onclick="change_value('width_a', -1)">-</button>
+            <span id="width_a" class="number-label">4</span>
+            <button onclick="change_value('width_a', 1)">+</button>
          </div>
          <div class="input-pair">
             <span class="label">Height:</span>
-            <button onclick="change_value('a_height', -1)">-</button>
-            <span id="a_height" class="number-label">6</span>
-            <button onclick="change_value('a_height', 1)">+</button>
+            <button onclick="change_value('height_a', -1)">-</button>
+            <span id="height_a" class="number-label">5</span>
+            <button onclick="change_value('height_a', 1)">+</button>
          </div>
       </div>
 
@@ -99,15 +99,15 @@
          <h2>Shape B</h2>
          <div class="input-pair">
             <span class="label">Width:</span>
-            <button onclick="change_value('b_width', -1)">-</button>
-            <span id="b_width" class="number-label">5</span>
-            <button onclick="change_value('b_width', 1)">+</button>
+            <button onclick="change_value('width_b', -1)">-</button>
+            <span id="width_b" class="number-label">6</span>
+            <button onclick="change_value('width_b', 1)">+</button>
          </div>
          <div class="input-pair">
             <span class="label">Height:</span>
-            <button onclick="change_value('b_height', -1)">-</button>
-            <span id="b_height" class="number-label">4</span>
-            <button onclick="change_value('b_height', 1)">+</button>
+            <button onclick="change_value('height_b', -1)">-</button>
+            <span id="height_b" class="number-label">5</span>
+            <button onclick="change_value('height_b', 1)">+</button>
          </div>
       </div>
 
@@ -250,10 +250,10 @@
          const c_height_label = document.getElementById("c_height")
          
          // grab width and height
-         const a_width  = parseInt(document.getElementById("a_width").textContent)
-         const a_height = parseInt(document.getElementById("a_height").textContent)
-         const b_width  = parseInt(document.getElementById("b_width").textContent)
-         const b_height = parseInt(document.getElementById("b_height").textContent)
+         const width_a  = parseInt(document.getElementById("width_a").textContent)
+         const height_a = parseInt(document.getElementById("height_a").textContent)
+         const width_b  = parseInt(document.getElementById("width_b").textContent)
+         const height_b = parseInt(document.getElementById("height_b").textContent)
 
          // clear svg
          const svg = document.getElementById("svg")
@@ -267,7 +267,7 @@
          create_circle(svg, 0, 0, 1000, '#f9f9f9')
 
          // compute shapes and add
-         const max_shape_size = Math.max(a_width, a_height, b_width, b_height)
+         const max_shape_size = Math.max(width_a, height_a, width_b, height_b)
          const box_size       = WRITE_SECTION_SIZE / (max_shape_size + 1)
          const stroke_width   = WRITE_SECTION_SIZE / max_shape_size * 0.03
          const point_size     = box_size * 0.1
@@ -278,37 +278,37 @@
          
          const rects_a  = []
          const points_a = []
-         for (let i = 0; i < a_height; i++) {
+         for (let i = 0; i < height_a; i++) {
             rects_a .push([])
             points_a.push([])
          }
          const rects_b  = []
          const points_b = []
-         for (let i = 0; i < b_height; i++) {
+         for (let i = 0; i < height_b; i++) {
             rects_b .push([])
             points_b.push([])
          }
 
-         fill_grid(cx1, cy, box_size, a_width, a_height, function(x, y, xx, yy) {
-            if (x < a_width && y < a_height) {
+         fill_grid(cx1, cy, box_size, width_a, height_a, function(x, y, xx, yy) {
+            if (x < width_a && y < height_a) {
                rects_a[y].push(create_rect(svg, xx, yy, box_size, box_size, 'color-a', INACTIVE_STYLE))
             }
          })
-         fill_grid(cx2, cy, box_size, b_width, b_height, function(x, y, xx, yy) {
-            if (x < b_width && y < b_height) {
+         fill_grid(cx2, cy, box_size, width_b, height_b, function(x, y, xx, yy) {
+            if (x < width_b && y < height_b) {
                rects_b[y].push(create_rect(svg, xx, yy, box_size, box_size, 'color-b', INACTIVE_STYLE))
             }
          })
 
-         create_grid(svg, cx1, cy, box_size, a_width, a_height, stroke_width)
-         create_grid(svg, cx2, cy, box_size, b_width, b_height, stroke_width)
+         create_grid(svg, cx1, cy, box_size, width_a, height_a, stroke_width)
+         create_grid(svg, cx2, cy, box_size, width_b, height_b, stroke_width)
 
-         fill_grid(cx1, cy, box_size, a_width, a_height, function(x, y, xx, yy) {
+         fill_grid(cx1, cy, box_size, width_a, height_a, function(x, y, xx, yy) {
             const c = create_circle(svg, xx + box_size/2, yy + box_size/2, point_size, null, 'color-a')
             c.setAttribute('pointer-events', 'none')
             points_a[y].push(c)
          })
-         fill_grid(cx2, cy, box_size, b_width, b_height, function(x, y, xx, yy) {
+         fill_grid(cx2, cy, box_size, width_b, height_b, function(x, y, xx, yy) {
             const center_x = xx + box_size/2
             const center_y = yy + box_size/2
             const c = create_circle(svg, center_x, center_y, point_size, null, 'color-b')
@@ -316,33 +316,43 @@
             points_b[y].push(c)
          })
 
-         var selected_x = -1
-         var selected_y = -1
-         const text = create_text(svg, "0", -1000, -1000, "black", 9)
-         text.setAttribute('pointer-events', 'none')
-         fill_grid(cx2, cy, box_size, b_width, b_height, function(x, y, xx, yy) {
-            const center_x = xx + box_size/2
-            const center_y = yy + box_size/2
-            rects_b[y][x].onclick = function() {
-               const click_on_self = selected_x == x && selected_y == y
-               if ((selected_x >= 0 && selected_y >= 0) || click_on_self) {
-                  points_b[selected_y][selected_x].setAttribute("style", "")
-                  rects_b [selected_y][selected_x].setAttribute("style", INACTIVE_STYLE)
+         const is_dim_width = document.getElementById('dim-width').checked
+         if (is_dim_width && height_a != height_b && height_a != 1 && height_b != 1) {
+            error_label.textContent = `Heights must either match or one must be size 1 when Dim=Width, got ${height_a} != ${height_b}`
+         } else if (!is_dim_width && width_a != width_b && width_a != 1 && width_b != 1) {
+            error_label.textContent = `Widths must either match or one must be size 1 when Dim=Height, got ${width_a} != ${width_b}`
+         } else {
+            error_label.textContent = ""
+
+            var selected_x = -1
+            var selected_y = -1
+            const text = create_text(svg, "0", -1000, -1000, "black", 9)
+            text.setAttribute('pointer-events', 'none')
+            fill_grid(cx2, cy, box_size, width_b, height_b, function(x, y, xx, yy) {
+               const center_x = xx + box_size/2
+               const center_y = yy + box_size/2
+               rects_b[y][x].onclick = function() {
+                  const click_on_self = selected_x == x && selected_y == y
+                  if ((selected_x >= 0 && selected_y >= 0) || click_on_self) {
+                     points_b[selected_y][selected_x].setAttribute("style", "")
+                     rects_b [selected_y][selected_x].setAttribute("style", INACTIVE_STYLE)
+                  }
+                  if (click_on_self) {
+                     text.setAttribute("x", -1000)
+                     selected_x = -1
+                     selected_y = -1
+                     return
+                  }
+                  points_b[y][x].setAttribute("style", "visibility: hidden;")
+                  rects_b [y][x].setAttribute("style", ACTIVE_STYLE)
+                  text.setAttribute("x", center_x)
+                  text.setAttribute("y", center_y)
+                  selected_x = x
+                  selected_y = y
                }
-               if (click_on_self) {
-                  text.setAttribute("x", -1000)
-                  selected_x = -1
-                  selected_y = -1
-                  return
-               }
-               points_b[y][x].setAttribute("style", "visibility: hidden;")
-               rects_b [y][x].setAttribute("style", ACTIVE_STYLE)
-               text.setAttribute("x", center_x)
-               text.setAttribute("y", center_y)
-               selected_x = x
-               selected_y = y
-            }
-         })
+            })
+         }
+
       }
 
       update()
