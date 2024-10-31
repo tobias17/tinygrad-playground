@@ -335,7 +335,7 @@
                index_slider.value = 0
                index_slider.max = (is_dim_width ? width_a : height_a) - 1
 
-               const index_label = create_text(svg, "0", -1000, -1000, "black", 9)
+               const index_label = create_text(svg, "0", -1000, -1000, "black", 9/12*box_size)
                index_label.setAttribute('pointer-events', 'none')
 
                var selected_x = -1
@@ -348,7 +348,6 @@
                   rects_a[prev_y][prev_x].setAttribute("style", INACTIVE_STYLE)
                   prev_x = is_dim_width ? index_slider.value : Math.min(selected_x, width_a-1)
                   prev_y = is_dim_width ? Math.min(selected_y, height_a-1) : index_slider.value
-                  console.log(prev_y)
                   rects_a[prev_y][prev_x].setAttribute("style", ACTIVE_STYLE)
                }
                index_slider.oninput = on_slider_update
